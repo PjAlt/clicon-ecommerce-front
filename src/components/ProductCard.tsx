@@ -1,6 +1,7 @@
+
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Heart, ShoppingCart, Star, Eye } from 'lucide-react';
+import { Heart, ShoppingCart, Star, Eye, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Product } from '@/types/api';
@@ -102,7 +103,7 @@ export const ProductCard = ({ product }: ProductCardProps) => {
         {/* Product Info */}
         <div className="p-4">
           <h3 
-            className="font-semibold text-gray-900 mb-2 line-clamp-2 cursor-pointer hover:text-orange-500"
+            className="font-semibold text-gray-900 mb-2 line-clamp-2 cursor-pointer hover:text-blue-600"
             onClick={handleProductClick}
           >
             {product.name}
@@ -149,7 +150,7 @@ export const ProductCard = ({ product }: ProductCardProps) => {
           {/* Add to Cart Button */}
           <Button
             onClick={handleAddToCart}
-            className="w-full bg-orange-500 hover:bg-orange-600"
+            className="w-full bg-blue-600 hover:bg-blue-700"
             disabled={!product.canAddToCart}
           >
             <ShoppingCart className="h-4 w-4 mr-2" />
@@ -168,17 +169,20 @@ export const ProductCard = ({ product }: ProductCardProps) => {
       {/* Quick View Modal */}
       {showQuickView && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+          <div className="bg-white rounded-lg max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto relative">
+            {/* Close Button */}
+            <Button
+              variant="ghost"
+              size="icon"
+              className="absolute right-4 top-4 z-10"
+              onClick={() => setShowQuickView(false)}
+            >
+              <X className="h-4 w-4" />
+            </Button>
+            
             <div className="p-6">
               <div className="flex justify-between items-center mb-4">
                 <h2 className="text-xl font-bold">Quick View</h2>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => setShowQuickView(false)}
-                >
-                  <Eye className="h-4 w-4" />
-                </Button>
               </div>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -254,7 +258,7 @@ export const ProductCard = ({ product }: ProductCardProps) => {
                   <div className="space-y-2">
                     <Button
                       onClick={handleAddToCart}
-                      className="w-full bg-orange-500 hover:bg-orange-600"
+                      className="w-full bg-blue-600 hover:bg-blue-700"
                       disabled={!product.canAddToCart}
                     >
                       <ShoppingCart className="h-4 w-4 mr-2" />

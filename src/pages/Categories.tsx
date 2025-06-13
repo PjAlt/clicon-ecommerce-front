@@ -16,7 +16,7 @@ export default function Categories() {
       try {
         setLoading(true);
         const response = await apiClient.getCategories();
-        setCategories(response.data || []);
+        setCategories((response as any)?.data || []);
       } catch (error) {
         console.error('Error fetching categories:', error);
         toast({
@@ -63,7 +63,7 @@ export default function Categories() {
                 onClick={() => handleCategoryClick(category.id)}
                 className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow cursor-pointer"
               >
-                <div className="h-48 bg-gradient-to-br from-orange-400 to-red-500 flex items-center justify-center">
+                <div className="h-48 bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center">
                   <img
                     src={category.imageUrl || '/placeholder.svg'}
                     alt={category.name}

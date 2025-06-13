@@ -3,11 +3,15 @@ import { useQuery } from '@tanstack/react-query';
 import { Header } from '@/components/Header';
 import { ProductCard } from '@/components/ProductCard';
 import { apiClient } from '@/lib/api';
-import { Product, Category, BannerEvent, ApiResponse, PaginatedResponse } from '@/types/api';
+import { Product, Category, BannerEvent } from '@/types/api';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, Star, TrendingUp, Zap } from 'lucide-react';
+import { ArrowRight, Star, TrendingUp, Zap, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
+import { useNavigate } from 'react-router-dom';
 
 const Index = () => {
+  const navigate = useNavigate();
+
   // Fetch featured products
   const { data: productsResponse } = useQuery({
     queryKey: ['products', 'featured'],
@@ -18,129 +22,167 @@ const Index = () => {
     }),
   });
 
-  // Fetch products on sale
+  // Fetch products on sale (Best Deals)
   const { data: saleProductsResponse } = useQuery({
     queryKey: ['products', 'on-sale'],
-    queryFn: () => apiClient.getProductsOnSale(1, 6),
+    queryFn: () => apiClient.getProductsOnSale(1, 8),
   });
 
   // Fetch categories
   const { data: categoriesResponse } = useQuery({
     queryKey: ['categories'],
-    queryFn: () => apiClient.getCategories(1, 6),
+    queryFn: () => apiClient.getCategories(1, 8),
   });
 
   // Fetch banner events
   const { data: bannerEventsResponse } = useQuery({
     queryKey: ['banner-events'],
-    queryFn: () => apiClient.getBannerEvents(1, 3),
+    queryFn: () => apiClient.getBannerEvents(1, 5),
   });
 
-  const products = (productsResponse as { data?: Product[] })?.data || [];
-  const saleProducts = (saleProductsResponse as { data?: Product[] })?.data || [];
-  const categories = (categoriesResponse as { data?: Category[] })?.data || [];
-  const bannerEvents = (bannerEventsResponse as { data?: { data?: BannerEvent[] } })?.data?.data || [];
+  const products = (productsResponse as any)?.data || [];
+  const saleProducts = (saleProductsResponse as any)?.data || [];
+  const categories = (categoriesResponse as any)?.data || [];
+  const bannerEvents = (bannerEventsResponse as any)?.data?.data || [];
 
   return (
     <div className="min-h-screen bg-gray-50">
       <Header />
       
-      {/* Hero Section */}
-      <section className="bg-gradient-to-r from-orange-500 to-red-500 text-white py-20">
+      {/* Hero Banner Carousel */}
+      <section className="bg-gradient-to-r from-blue-600 to-blue-800 text-white">
         <div className="container mx-auto px-4">
-          <div className="max-w-2xl">
-            <h1 className="text-5xl font-bold mb-6">
-              Summer Sale For All Items - Save Up To 70%
-            </h1>
-            <p className="text-xl mb-8 opacity-90">
-              Discover amazing deals on electronics, home & kitchen, and more!
-            </p>
-            <Button size="lg" className="bg-white text-orange-500 hover:bg-gray-100">
-              Shop Now
-              <ArrowRight className="ml-2 h-5 w-5" />
-            </Button>
-          </div>
+          <Carousel className="w-full">
+            <CarouselContent>
+              {bannerEvents.length > 0 ? bannerEvents.map((event: any) => (
+                <CarouselItem key={event.id}>
+                  <div className="py-20">
+                    <div className="max-w-2xl">
+                      <span className="inline-block bg-red-500 text-white px-3 py-1 rounded-full text-sm font-semibold mb-4">
+                        {event.statusBadge}
+                      </span>
+                      <h1 className="text-5xl font-bold mb-6">
+                        {event.name}
+                      </h1>
+                      <p className="text-xl mb-8 opacity-90">
+                        {event.description}
+                      </p>
+                      <div className="flex items-center space-x-4 mb-8">
+                        <span className="text-3xl font-bold text-yellow-300">
+                          {event.formattedDiscount}
+                        </span>
+                      </div>
+                      <Button size="lg" className="bg-white text-blue-600 hover:bg-gray-100">
+                        Shop Now
+                        <ArrowRight className="ml-2 h-5 w-5" />
+                      </Button>
+                    </div>
+                  </div>
+                </CarouselItem>
+              )) : (
+                <CarouselItem>
+                  <div className="py-20">
+                    <div className="max-w-2xl">
+                      <h1 className="text-5xl font-bold mb-6">
+                        Summer Sale For All Items
+                      </h1>
+                      <p className="text-xl mb-8 opacity-90">
+                        Discover amazing deals on electronics, home & kitchen, and more!
+                      </p>
+                      <Button size="lg" className="bg-white text-blue-600 hover:bg-gray-100">
+                        Shop Now
+                        <ArrowRight className="ml-2 h-5 w-5" />
+                      </Button>
+                    </div>
+                  </div>
+                </CarouselItem>
+              )}
+            </CarouselContent>
+            <CarouselPrevious className="left-4" />
+            <CarouselNext className="right-4" />
+          </Carousel>
         </div>
       </section>
 
-      {/* Banner Events */}
-      {bannerEvents.length > 0 && (
-        <section className="py-16">
-          <div className="container mx-auto px-4">
-            <div className="text-center mb-12">
-              <h2 className="text-3xl font-bold text-gray-900 mb-4">Special Events</h2>
-              <p className="text-gray-600">Limited time offers you can't miss</p>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {bannerEvents.map((event) => (
-                <div key={event.id} className="bg-white rounded-lg shadow-md p-6">
-                  <div className="flex items-center mb-4">
-                    <Zap className="h-6 w-6 text-orange-500 mr-2" />
-                    <span className="bg-orange-100 text-orange-800 px-2 py-1 rounded-full text-sm font-semibold">
-                      {event.statusBadge}
-                    </span>
-                  </div>
-                  <h3 className="text-xl font-bold mb-2">{event.name}</h3>
-                  <p className="text-gray-600 mb-4">{event.description}</p>
-                  <div className="flex justify-between items-center">
-                    <span className="text-2xl font-bold text-orange-500">
-                      {event.formattedDiscount}
-                    </span>
-                    <Button variant="outline">View Details</Button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-      )}
-
-      {/* Categories */}
+      {/* Shop with Category Section */}
       {categories.length > 0 && (
         <section className="py-16 bg-white">
           <div className="container mx-auto px-4">
-            <div className="text-center mb-12">
-              <h2 className="text-3xl font-bold text-gray-900 mb-4">Shop by Category</h2>
-              <p className="text-gray-600">Browse our wide range of categories</p>
+            <div className="flex items-center justify-between mb-12">
+              <div>
+                <h2 className="text-3xl font-bold text-gray-900 mb-4">Shop by Category</h2>
+                <p className="text-gray-600">Browse our wide range of categories</p>
+              </div>
+              <Button 
+                variant="outline"
+                onClick={() => navigate('/categories')}
+              >
+                View All Categories
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Button>
             </div>
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
-              {categories.map((category) => (
-                <div key={category.id} className="text-center group cursor-pointer">
-                  <div className="bg-gray-100 rounded-lg p-6 mb-4 group-hover:bg-orange-100 transition-colors">
-                    <img
-                      src={category.imageUrl || '/placeholder.svg'}
-                      alt={category.name}
-                      className="w-16 h-16 mx-auto object-cover rounded"
-                    />
-                  </div>
-                  <h3 className="font-semibold text-gray-900 group-hover:text-orange-500 transition-colors">
-                    {category.name}
-                  </h3>
-                </div>
-              ))}
+            
+            <div className="relative">
+              <Carousel className="w-full">
+                <CarouselContent className="-ml-2 md:-ml-4">
+                  {categories.map((category: any) => (
+                    <CarouselItem key={category.id} className="pl-2 md:pl-4 basis-1/2 md:basis-1/3 lg:basis-1/6">
+                      <div 
+                        className="text-center group cursor-pointer"
+                        onClick={() => navigate(`/category/${category.id}`)}
+                      >
+                        <div className="bg-gray-100 rounded-lg p-6 mb-4 group-hover:bg-blue-100 transition-colors">
+                          <img
+                            src={category.imageUrl || '/placeholder.svg'}
+                            alt={category.name}
+                            className="w-16 h-16 mx-auto object-cover rounded"
+                          />
+                        </div>
+                        <h3 className="font-semibold text-gray-900 group-hover:text-blue-600 transition-colors text-sm">
+                          {category.name}
+                        </h3>
+                      </div>
+                    </CarouselItem>
+                  ))}
+                </CarouselContent>
+                <CarouselPrevious className="left-0" />
+                <CarouselNext className="right-0" />
+              </Carousel>
             </div>
           </div>
         </section>
       )}
 
-      {/* Products on Sale */}
+      {/* Best Deals Section */}
       {saleProducts.length > 0 && (
         <section className="py-16">
           <div className="container mx-auto px-4">
             <div className="flex items-center justify-between mb-12">
               <div>
-                <h2 className="text-3xl font-bold text-gray-900 mb-4">Products on Sale</h2>
+                <h2 className="text-3xl font-bold text-gray-900 mb-4">Best Deals</h2>
                 <p className="text-gray-600">Don't miss these amazing deals</p>
               </div>
-              <Button variant="outline">
-                View All
+              <Button 
+                variant="outline"
+                onClick={() => navigate('/shop')}
+              >
+                View All Deals
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {saleProducts.map((product) => (
-                <ProductCard key={product.id} product={product} />
-              ))}
+            
+            <div className="relative">
+              <Carousel className="w-full">
+                <CarouselContent className="-ml-2 md:-ml-4">
+                  {saleProducts.map((product: any) => (
+                    <CarouselItem key={product.id} className="pl-2 md:pl-4 basis-full sm:basis-1/2 lg:basis-1/3 xl:basis-1/4">
+                      <ProductCard product={product} />
+                    </CarouselItem>
+                  ))}
+                </CarouselContent>
+                <CarouselPrevious className="left-0" />
+                <CarouselNext className="right-0" />
+              </Carousel>
             </div>
           </div>
         </section>
@@ -155,13 +197,17 @@ const Index = () => {
                 <h2 className="text-3xl font-bold text-gray-900 mb-4">Featured Products</h2>
                 <p className="text-gray-600">Handpicked items just for you</p>
               </div>
-              <Button variant="outline">
-                View All
+              <Button 
+                variant="outline"
+                onClick={() => navigate('/shop')}
+              >
+                View All Products
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
             </div>
+            
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {products.map((product) => (
+              {products.slice(0, 8).map((product: any) => (
                 <ProductCard key={product.id} product={product} />
               ))}
             </div>
@@ -169,22 +215,40 @@ const Index = () => {
         </section>
       )}
 
+      {/* Newsletter Section */}
+      <section className="py-16 bg-gradient-to-r from-blue-600 to-blue-800 text-white">
+        <div className="container mx-auto px-4 text-center">
+          <h2 className="text-3xl font-bold mb-4">Subscribe to our Newsletter</h2>
+          <p className="text-xl opacity-90 mb-8">Get the latest updates on new products and deals</p>
+          <div className="max-w-md mx-auto flex">
+            <input
+              type="email"
+              placeholder="Enter your email"
+              className="flex-1 px-4 py-3 rounded-l-lg text-gray-900"
+            />
+            <Button className="bg-white text-blue-600 hover:bg-gray-100 rounded-l-none">
+              Subscribe
+            </Button>
+          </div>
+        </div>
+      </section>
+
       {/* Stats Section */}
       <section className="py-16 bg-gray-900 text-white">
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
             <div className="flex flex-col items-center">
-              <TrendingUp className="h-12 w-12 text-orange-500 mb-4" />
+              <TrendingUp className="h-12 w-12 text-blue-500 mb-4" />
               <h3 className="text-3xl font-bold mb-2">10K+</h3>
               <p className="text-gray-300">Happy Customers</p>
             </div>
             <div className="flex flex-col items-center">
-              <Star className="h-12 w-12 text-orange-500 mb-4" />
+              <Star className="h-12 w-12 text-blue-500 mb-4" />
               <h3 className="text-3xl font-bold mb-2">4.8/5</h3>
               <p className="text-gray-300">Average Rating</p>
             </div>
             <div className="flex flex-col items-center">
-              <Zap className="h-12 w-12 text-orange-500 mb-4" />
+              <Zap className="h-12 w-12 text-blue-500 mb-4" />
               <h3 className="text-3xl font-bold mb-2">24/7</h3>
               <p className="text-gray-300">Customer Support</p>
             </div>
@@ -198,7 +262,7 @@ const Index = () => {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             <div>
               <div className="flex items-center space-x-2 mb-4">
-                <div className="bg-gradient-to-r from-orange-500 to-red-500 text-white p-2 rounded-lg font-bold text-xl">
+                <div className="bg-gradient-to-r from-blue-500 to-blue-600 text-white p-2 rounded-lg font-bold text-xl">
                   C
                 </div>
                 <span className="text-2xl font-bold">Clicon</span>

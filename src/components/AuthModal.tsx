@@ -172,7 +172,7 @@ export const AuthModal = ({ isOpen, onClose, defaultTab = 'login' }: AuthModalPr
           Forgot Password?
         </Button>
       </div>
-      <Button type="submit" className="w-full" disabled={isLoading}>
+      <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700" disabled={isLoading}>
         {isLoading ? 'Signing in...' : 'Sign In'}
       </Button>
       <div className="text-center">
@@ -252,7 +252,7 @@ export const AuthModal = ({ isOpen, onClose, defaultTab = 'login' }: AuthModalPr
           required
         />
       </div>
-      <Button type="submit" className="w-full" disabled={isLoading}>
+      <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700" disabled={isLoading}>
         {isLoading ? 'Creating Account...' : 'Create Account'}
       </Button>
       <div className="text-center">
@@ -282,7 +282,7 @@ export const AuthModal = ({ isOpen, onClose, defaultTab = 'login' }: AuthModalPr
           required
         />
       </div>
-      <Button type="submit" className="w-full" disabled={isLoading}>
+      <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700" disabled={isLoading}>
         {isLoading ? 'Verifying...' : 'Verify Email'}
       </Button>
       <div className="text-center">
@@ -308,7 +308,7 @@ export const AuthModal = ({ isOpen, onClose, defaultTab = 'login' }: AuthModalPr
           required
         />
       </div>
-      <Button type="submit" className="w-full">
+      <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700">
         Send Reset Link
       </Button>
       <div className="text-center">
@@ -332,12 +332,12 @@ export const AuthModal = ({ isOpen, onClose, defaultTab = 'login' }: AuthModalPr
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-md">
-        <DialogHeader>
-          <DialogTitle className="text-center">{getTitle()}</DialogTitle>
+        <DialogHeader className="relative">
+          <DialogTitle className="text-center pr-8">{getTitle()}</DialogTitle>
           <Button
             variant="ghost"
             size="icon"
-            className="absolute right-4 top-4"
+            className="absolute right-0 top-0"
             onClick={onClose}
           >
             <X className="h-4 w-4" />
