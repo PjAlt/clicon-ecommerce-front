@@ -1,5 +1,5 @@
-
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Heart, ShoppingCart, Star, Eye } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -14,6 +14,7 @@ interface ProductCardProps {
 }
 
 export const ProductCard = ({ product }: ProductCardProps) => {
+  const navigate = useNavigate();
   const { addToCart } = useCart();
   const { isAuthenticated } = useAuth();
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
@@ -45,11 +46,15 @@ export const ProductCard = ({ product }: ProductCardProps) => {
     setShowQuickView(true);
   };
 
+  const handleProductClick = () => {
+    navigate(`/product/${product.id}`);
+  };
+
   return (
     <>
       <div className="bg-white rounded-lg shadow-md overflow-hidden group hover:shadow-lg transition-shadow">
         {/* Product Image */}
-        <div className="relative">
+        <div className="relative cursor-pointer" onClick={handleProductClick}>
           <img
             src={product.images?.[0]?.imageUrl || '/placeholder.svg'}
             alt={product.name}
@@ -69,7 +74,10 @@ export const ProductCard = ({ product }: ProductCardProps) => {
               size="icon"
               variant="secondary"
               className="h-8 w-8"
-              onClick={handleQuickView}
+              onClick={(e) => {
+                e.stopPropagation();
+                handleQuickView();
+              }}
             >
               <Eye className="h-4 w-4" />
             </Button>
@@ -77,6 +85,7 @@ export const ProductCard = ({ product }: ProductCardProps) => {
               size="icon"
               variant="secondary"
               className="h-8 w-8"
+              onClick={(e) => e.stopPropagation()}
             >
               <Heart className="h-4 w-4" />
             </Button>
@@ -92,7 +101,10 @@ export const ProductCard = ({ product }: ProductCardProps) => {
 
         {/* Product Info */}
         <div className="p-4">
-          <h3 className="font-semibold text-gray-900 mb-2 line-clamp-2">
+          <h3 
+            className="font-semibold text-gray-900 mb-2 line-clamp-2 cursor-pointer hover:text-orange-500"
+            onClick={handleProductClick}
+          >
             {product.name}
           </h3>
           
@@ -248,8 +260,12 @@ export const ProductCard = ({ product }: ProductCardProps) => {
                       <ShoppingCart className="h-4 w-4 mr-2" />
                       Add to Cart
                     </Button>
-                    <Button variant="outline" className="w-full">
-                      Buy Now
+                    <Button 
+                      variant="outline" 
+                      className="w-full"
+                      onClick={handleProductClick}
+                    >
+                      View Details
                     </Button>
                   </div>
                 </div>

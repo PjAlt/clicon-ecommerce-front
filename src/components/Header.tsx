@@ -132,6 +132,9 @@ export const Header = () => {
                       <Link to="/orders">Order History</Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem asChild>
+                      <Link to="/track-order">Track Orders</Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
                       <Link to="/addresses">Addresses</Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem onClick={logout}>
@@ -189,10 +192,10 @@ export const Header = () => {
                   <Link to="/categories">Categories</Link>
                 </Button>
                 <Button variant="ghost" asChild className="justify-start">
-                  <Link to="/stores">Stores</Link>
+                  <Link to="/shop">Shop</Link>
                 </Button>
                 <Button variant="ghost" asChild className="justify-start">
-                  <Link to="/deals">Deals</Link>
+                  <Link to="/track-order">Track Order</Link>
                 </Button>
                 {!isAuthenticated && (
                   <>
@@ -220,16 +223,16 @@ export const Header = () => {
                 All Categories
               </Link>
               <Link 
-                to="/stores" 
+                to="/shop" 
                 className="text-gray-700 hover:text-orange-500 font-medium transition-colors"
               >
-                Stores
+                Shop
               </Link>
               <Link 
-                to="/deals" 
+                to="/track-order" 
                 className="text-gray-700 hover:text-orange-500 font-medium transition-colors"
               >
-                Today's Deals
+                Track Order
               </Link>
               <Link 
                 to="/electronics" 
