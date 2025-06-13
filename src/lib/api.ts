@@ -1,4 +1,3 @@
-
 import { QueryClient } from '@tanstack/react-query';
 
 export const API_BASE_URL = 'https://localhost:7028';
@@ -163,6 +162,65 @@ class ApiClient {
     return this.request('/auth/login', {
       method: 'POST',
       body: JSON.stringify({ email, password }),
+    });
+  }
+
+  // Cart Management
+  async addToCart(userId: number, productId: number, quantity: number) {
+    return this.request('/CartItem/create-cart', {
+      method: 'POST',
+      body: JSON.stringify({ userId, productId, quantity }),
+    });
+  }
+
+  async getCartItems(userId: number, pageNumber = 1, pageSize = 10) {
+    return this.request(`/CartItem/getCartItemByUserId?userId=${userId}&PageNumber=${pageNumber}&PageSize=${pageSize}`);
+  }
+
+  async updateCartItem(cartItemId: number, quantity: number) {
+    return this.request('/CartItem/update-cart', {
+      method: 'PUT',
+      body: JSON.stringify({ cartItemId, quantity }),
+    });
+  }
+
+  async removeFromCart(cartItemId: number) {
+    return this.request(`/CartItem/delete-cart?cartItemId=${cartItemId}`, {
+      method: 'DELETE',
+    });
+  }
+
+  // Payment Methods
+  async getPaymentMethods(pageNumber = 1, pageSize = 10) {
+    return this.request(`/paymentMethod/getAllPaymentMethod?PageNumber=${pageNumber}&PageSize=${pageSize}`);
+  }
+
+  // Order Management
+  async placeOrder(userId: number, shippingAddress: string, shippingCity: string) {
+    return this.request('/Order/place-order', {
+      method: 'POST',
+      body: JSON.stringify({ userId, shippingAddress, shippingCity }),
+    });
+  }
+
+  async createPaymentIntent(userId: number, orderId: number, paymentMethodId: number, description: string) {
+    return this.request('/Payment/create-payment-intent', {
+      method: 'POST',
+      body: JSON.stringify({ userId, orderId, paymentMethodId, description }),
+    });
+  }
+
+  async verifyPayment(paymentRequestId: number, esewaTransactionId?: string, khaltiPidx?: string, status?: string) {
+    const formData = new FormData();
+    formData.append('PaymentRequestId', paymentRequestId.toString());
+    if (esewaTransactionId) formData.append('EsewaTransactionId', esewaTransactionId);
+    if (khaltiPidx) formData.append('KhaltiPidx', khaltiPidx);
+    if (status) formData.append('Status', status);
+
+    return this.request('/Payment/verifyPayment', {
+      method: 'POST',
+      body: formData,
+      headers: {}, // Remove Content-Type to let browser set it for FormData
     });
   }
 }
