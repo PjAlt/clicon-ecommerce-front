@@ -59,7 +59,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
   const login = async (email: string, password: string): Promise<AuthResponse> => {
     try {
-      const response = await apiClient.login(email, password);
+      const response = await apiClient.login(email, password) as AuthResponse;
       
       if (response.success) {
         apiClient.setToken(response.accessToken);
@@ -84,7 +84,14 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       return response;
     } catch (error) {
       console.error('Login error:', error);
-      throw error;
+      // Return a proper AuthResponse for error cases
+      return {
+        success: false,
+        accessToken: '',
+        refreshToken: '',
+        expiresIn: 0,
+        message: 'Login failed'
+      };
     }
   };
 
