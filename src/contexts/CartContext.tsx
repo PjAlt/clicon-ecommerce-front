@@ -31,8 +31,8 @@ export const CartProvider = ({ children }: CartProviderProps) => {
   // Get user ID from localStorage
   const userId = (() => {
     try {
-      const user = localStorage.getItem('user');
-      return user ? JSON.parse(user).id : undefined;
+      const user = localStorage.getItem('userData');
+      return user ? JSON.parse(user).name_id : undefined;
     } catch {
       return undefined;
     }
