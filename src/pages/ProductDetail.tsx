@@ -27,10 +27,12 @@ export default function ProductDetail() {
   useEffect(() => {
     const fetchProduct = async () => {
       if (!productId) return;
-      
+
       try {
         setLoading(true);
-        const response = await apiClient.getProductById(parseInt(productId));
+        // Fix: productId is a string, parse to number for getProductById(param: number)
+        const id = parseInt(productId, 10);
+        const response = await apiClient.getProductById(id);
         setProduct((response as any)?.data || null);
       } catch (error) {
         console.error('Error fetching product:', error);

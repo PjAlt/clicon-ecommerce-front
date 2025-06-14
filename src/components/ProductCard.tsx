@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Heart, ShoppingCart, Star, Eye, X } from 'lucide-react';
@@ -48,6 +47,7 @@ export const ProductCard = ({ product }: ProductCardProps) => {
   };
 
   const handleProductClick = () => {
+    // Fix: Use product.id instead of passing product object
     navigate(`/product/${product.id}`);
   };
 
@@ -267,6 +267,7 @@ export const ProductCard = ({ product }: ProductCardProps) => {
                     <Button 
                       variant="outline" 
                       className="w-full"
+                      // Fix: Use correct navigation by product.id
                       onClick={handleProductClick}
                     >
                       View Details
