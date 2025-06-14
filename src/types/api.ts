@@ -196,6 +196,12 @@ export interface User {
   addresses?: Address[];
 }
 
+export interface DecodedUser {
+  email: string;
+  nameid: string;
+  unique_name: string;
+}
+
 export interface Address {
   id: number;
   userId: number;

@@ -64,9 +64,7 @@ export default function ProductDetail() {
       return;
     }
 
-    for (let i = 0; i < quantity; i++) {
-      addToCart(product);
-    }
+    addToCart(product.id, quantity);
     
     toast({
       title: "Added to Cart",

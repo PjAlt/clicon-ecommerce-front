@@ -16,6 +16,7 @@ export const ProductImageCarousel = ({ images, productName }: ProductImageCarous
   const [selectedImage, setSelectedImage] = useState(0);
   const [thumbnailStartIndex, setThumbnailStartIndex] = useState(0);
   
+  const BASE_URL = import.meta.env.BASE_URL;
   const thumbnailsPerView = 4;
   const maxThumbnailStart = Math.max(0, images.length - thumbnailsPerView);
 
@@ -34,7 +35,7 @@ export const ProductImageCarousel = ({ images, productName }: ProductImageCarous
       {/* Main Image Display */}
       <div className="bg-white rounded-lg p-4 border">
         <img
-          src={images[selectedImage]?.imageUrl || '/placeholder.svg'}
+          src={`${BASE_URL}/${images[selectedImage]?.imageUrl}` || '/placeholder.svg'}
           alt={productName}
           className="w-full h-96 object-cover rounded-lg"
         />
@@ -63,7 +64,7 @@ export const ProductImageCarousel = ({ images, productName }: ProductImageCarous
                 return (
                   <img
                     key={actualIndex}
-                    src={image.imageUrl || '/placeholder.svg'}
+                    src={`${BASE_URL}/${image.imageUrl}` || '/placeholder.svg'}
                     alt={`${productName} ${actualIndex + 1}`}
                     className={`w-16 h-16 object-cover rounded cursor-pointer border-2 transition-all ${
                       selectedImage === actualIndex 

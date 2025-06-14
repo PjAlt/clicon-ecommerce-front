@@ -1,10 +1,11 @@
 
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { User, AuthResponse } from '@/types/api';
+import { User, AuthResponse, DecodedUser } from '@/types/api';
 import { apiClient } from '@/lib/api';
+import { jwtDecode } from 'jwt-decode';
 
 interface AuthContextType {
-  user: User | null;
+  user: DecodedUser | null;
   isAuthenticated: boolean;
   isLoading: boolean;
   login: (email: string, password: string) => Promise<AuthResponse>;
@@ -34,7 +35,7 @@ interface AuthProviderProps {
 }
 
 export const AuthProvider = ({ children }: AuthProviderProps) => {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<DecodedUser | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -57,6 +58,13 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     setIsLoading(false);
   }, []);
 
+  interface DecodedToken {
+    email: string;
+    exp: number;
+    iat: number;
+    nameid: string;
+    unique_name: string;
+  }
   const login = async (email: string, password: string): Promise<AuthResponse> => {
     try {
       const response = await apiClient.login(email, password) as AuthResponse;
@@ -65,17 +73,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         apiClient.setToken(response.accessToken);
         localStorage.setItem('refreshToken', response.refreshToken);
         
-        // In a real app, you'd decode the JWT to get user info
-        // For now, we'll store basic info
-        const userData = { 
-          id: 1, // This should come from the JWT
-          name: email.split('@')[0], 
-          email,
-          contact: '',
-          createdAt: new Date().toISOString(),
-          imageUrl: '',
-          isDeleted: false
-        };
+        
+        const userData = jwtDecode<DecodedToken>(response.accessToken);
         
         setUser(userData);
         localStorage.setItem('userData', JSON.stringify(userData));
