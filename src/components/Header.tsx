@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Search, ShoppingCart, User, Bell, Menu, X } from 'lucide-react';
@@ -189,6 +188,9 @@ export const Header = () => {
             <div className="md:hidden mt-4 pb-4 border-t pt-4">
               <div className="flex flex-col space-y-2">
                 <Button variant="ghost" asChild className="justify-start">
+                  <Link to="/">Home</Link>
+                </Button>
+                <Button variant="ghost" asChild className="justify-start">
                   <Link to="/categories">Categories</Link>
                 </Button>
                 <Button variant="ghost" asChild className="justify-start">
@@ -217,34 +219,28 @@ export const Header = () => {
           <div className="container mx-auto px-4">
             <div className="flex items-center space-x-8 py-3">
               <Link 
+                to="/" 
+                className="text-gray-700 hover:text-blue-500 font-medium transition-colors"
+              >
+                Home
+              </Link>
+              <Link 
                 to="/categories" 
-                className="text-gray-700 hover:text-orange-500 font-medium transition-colors"
+                className="text-gray-700 hover:text-blue-500 font-medium transition-colors"
               >
                 All Categories
               </Link>
               <Link 
                 to="/shop" 
-                className="text-gray-700 hover:text-orange-500 font-medium transition-colors"
+                className="text-gray-700 hover:text-blue-500 font-medium transition-colors"
               >
                 Shop
               </Link>
               <Link 
                 to="/track-order" 
-                className="text-gray-700 hover:text-orange-500 font-medium transition-colors"
+                className="text-gray-700 hover:text-blue-500 font-medium transition-colors"
               >
                 Track Order
-              </Link>
-              <Link 
-                to="/electronics" 
-                className="text-gray-700 hover:text-orange-500 font-medium transition-colors"
-              >
-                Electronics
-              </Link>
-              <Link 
-                to="/home-kitchen" 
-                className="text-gray-700 hover:text-orange-500 font-medium transition-colors"
-              >
-                Home & Kitchen
               </Link>
             </div>
           </div>

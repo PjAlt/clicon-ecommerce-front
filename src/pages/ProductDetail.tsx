@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Star, Heart, ShoppingCart, Minus, Plus, ArrowLeft } from 'lucide-react';
 import { Header } from '@/components/Header';
+import { ProductImageCarousel } from '@/components/ProductImageCarousel';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -21,7 +22,6 @@ export default function ProductDetail() {
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
   const [quantity, setQuantity] = useState(1);
-  const [selectedImage, setSelectedImage] = useState(0);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
 
   useEffect(() => {
@@ -136,30 +136,7 @@ export default function ProductDetail() {
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
             {/* Product Images */}
-            <div className="space-y-4">
-              <div className="bg-white rounded-lg p-4">
-                <img
-                  src={images[selectedImage]?.imageUrl || '/placeholder.svg'}
-                  alt={product.name}
-                  className="w-full h-96 object-cover rounded-lg"
-                />
-              </div>
-              {images.length > 1 && (
-                <div className="flex space-x-2">
-                  {images.map((image, index) => (
-                    <img
-                      key={index}
-                      src={image.imageUrl || '/placeholder.svg'}
-                      alt={`${product.name} ${index + 1}`}
-                      className={`w-16 h-16 object-cover rounded cursor-pointer border-2 ${
-                        selectedImage === index ? 'border-blue-500' : 'border-gray-200'
-                      }`}
-                      onClick={() => setSelectedImage(index)}
-                    />
-                  ))}
-                </div>
-              )}
-            </div>
+            <ProductImageCarousel images={images} productName={product.name} />
 
             {/* Product Info */}
             <div className="space-y-6">

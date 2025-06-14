@@ -220,15 +220,17 @@ const Index = () => {
         <div className="container mx-auto px-4 text-center">
           <h2 className="text-3xl font-bold mb-4">Subscribe to our Newsletter</h2>
           <p className="text-xl opacity-90 mb-8">Get the latest updates on new products and deals</p>
-          <div className="max-w-md mx-auto flex">
-            <input
-              type="email"
-              placeholder="Enter your email"
-              className="flex-1 px-4 py-3 rounded-l-lg text-gray-900"
-            />
-            <Button className="bg-white text-blue-600 hover:bg-gray-100 rounded-l-none">
-              Subscribe
-            </Button>
+          <div className="max-w-md mx-auto">
+            <div className="flex rounded-lg overflow-hidden">
+              <input
+                type="email"
+                placeholder="Enter your email"
+                className="flex-1 px-4 py-3 text-gray-900 border-0 focus:outline-none focus:ring-0"
+              />
+              <Button className="bg-white text-blue-600 hover:bg-gray-100 px-6 py-3 rounded-none border-0">
+                Subscribe
+              </Button>
+            </div>
           </div>
         </div>
       </section>
