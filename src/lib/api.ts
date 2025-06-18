@@ -71,8 +71,7 @@ class ApiClient {
   }
 
   // Universal request - wrappers for GET/POST/PUT/DELETE
-
-  private async request<T>(method: string, url: string, data?: any, config?: any): Promise<T> {
+  async request<T>(method: string, url: string, data?: any, config?: any): Promise<T> {
     const resp = await this.axios.request<T>({ method, url, data, ...config });
     return resp.data;
   }

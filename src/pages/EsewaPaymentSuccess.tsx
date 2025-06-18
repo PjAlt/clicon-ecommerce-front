@@ -25,23 +25,14 @@ export default function EsewaPaymentSuccess() {
       // Get the data parameter from URL
       const dataParam = searchParams.get('data');
       
-      // Get stored payment details
-      const pendingPayment = localStorage.getItem('pendingPayment');
-      if (!pendingPayment) {
-        throw new Error('No pending payment found');
+      if (!dataParam) {
+        throw new Error('No payment data received');
       }
 
-      const paymentData = JSON.parse(pendingPayment);
-      
-      // Call verification endpoint
-      const response = await apiClient.verifyPayment(
-        paymentData.paymentRequestId,
-        paymentData.esewaTransactionId,
-        paymentData.khaltiPidx,
-        '1' // Success status
-      );
+      // Call the new success callback endpoint
+      const response = await apiClient.request('GET', `/payment/callback/esewa/success?data=${dataParam}`);
 
-      console.log('Payment verification response:', response);
+      console.log('Payment callback response:', response);
       
       setVerificationStatus('success');
       

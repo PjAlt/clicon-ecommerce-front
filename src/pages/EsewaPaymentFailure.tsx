@@ -1,9 +1,11 @@
+
 import { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { XCircle, RefreshCw } from 'lucide-react';
 import { Header } from '@/components/Header';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { apiClient } from '@/lib/api';
 import { toast } from '@/hooks/use-toast';
 
 export default function EsewaPaymentFailure() {
@@ -12,23 +14,37 @@ export default function EsewaPaymentFailure() {
   const [paymentData, setPaymentData] = useState<any>(null);
 
   useEffect(() => {
-    // Get the data parameter from URL (for debugging/logging)
-    const dataParam = searchParams.get('data');
-    console.log('eSewa failure callback data:', dataParam);
-    
-    // Get stored payment details for context
-    const pendingPayment = localStorage.getItem('pendingPayment');
-    if (pendingPayment) {
-      setPaymentData(JSON.parse(pendingPayment));
-    }
-
-    // Show failure toast
-    toast({
-      title: "Payment Failed",
-      description: "Your payment was not completed. You can try again.",
-      variant: "destructive",
-    });
+    handleFailureCallback();
   }, [searchParams]);
+
+  const handleFailureCallback = async () => {
+    try {
+      // Get the data parameter from URL
+      const dataParam = searchParams.get('data');
+      console.log('eSewa failure callback data:', dataParam);
+      
+      if (dataParam) {
+        // Call the new failure callback endpoint
+        const response = await apiClient.request('GET', `/payment/callback/esewa/failure?data=${dataParam}`);
+        console.log('Payment failure callback response:', response);
+      }
+      
+      // Get stored payment details for context
+      const pendingPayment = localStorage.getItem('pendingPayment');
+      if (pendingPayment) {
+        setPaymentData(JSON.parse(pendingPayment));
+      }
+
+      // Show failure toast
+      toast({
+        title: "Payment Failed",
+        description: "Your payment was not completed. You can try again.",
+        variant: "destructive",
+      });
+    } catch (error) {
+      console.error('Error handling payment failure callback:', error);
+    }
+  };
 
   const handleRetryPayment = () => {
     // Keep the pending payment data for retry

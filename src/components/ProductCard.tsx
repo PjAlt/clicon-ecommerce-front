@@ -16,31 +16,38 @@ interface ProductCardProps {
 export const ProductCard = ({ product }: ProductCardProps) => {
   const navigate = useNavigate();
   const { addToCart } = useCart();
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, userData, apiClient } = useAuth();
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [showQuickView, setShowQuickView] = useState(false);
   const baseUrl = import.meta.env.VITE_API_BASE_URL;
 
-  const handleAddToCart = () => {
-    if (!isAuthenticated) {
-      setIsAuthModalOpen(true);
-      return;
-    }
-    
-    if (!product.canAddToCart) {
+  const handleAddToCart = async () => {
+    if (!userData?.nameid) {
       toast({
-        title: "Product Unavailable",
-        description: "This product is currently out of stock",
+        title: "Login Required",
+        description: "Please login to add items to cart",
         variant: "destructive",
       });
       return;
     }
 
-    addToCart(product);
-    toast({
-      title: "Added to Cart",
-      description: `${product.name} has been added to your cart`,
-    });
+    try {
+      setIsLoading(true);
+      await apiClient.addToCart(userData.nameid, product.id, 1);
+      toast({
+        title: "Added to Cart",
+        description: `${product.name} has been added to your cart`,
+      });
+    } catch (error) {
+      console.error('Error adding to cart:', error);
+      toast({
+        title: "Error",
+        description: "Failed to add item to cart",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleQuickView = () => {
@@ -48,7 +55,6 @@ export const ProductCard = ({ product }: ProductCardProps) => {
   };
 
   const handleProductClick = () => {
-    // Fix: Use product.id instead of passing product object
     navigate(`/product/${product.id}`);
   };
 
@@ -268,7 +274,6 @@ export const ProductCard = ({ product }: ProductCardProps) => {
                     <Button 
                       variant="outline" 
                       className="w-full"
-                      // Fix: Use correct navigation by product.id
                       onClick={handleProductClick}
                     >
                       View Details
