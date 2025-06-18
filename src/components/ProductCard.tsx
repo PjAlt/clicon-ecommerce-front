@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Heart, ShoppingCart, Star, Eye, X } from 'lucide-react';
@@ -8,6 +9,7 @@ import { useCart } from '@/contexts/CartContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { AuthModal } from './AuthModal';
 import { toast } from '@/hooks/use-toast';
+import { apiClient } from '@/lib/api';
 
 interface ProductCardProps {
   product: Product;
@@ -16,13 +18,14 @@ interface ProductCardProps {
 export const ProductCard = ({ product }: ProductCardProps) => {
   const navigate = useNavigate();
   const { addToCart } = useCart();
-  const { isAuthenticated, userData, apiClient } = useAuth();
+  const { isAuthenticated, user } = useAuth();
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [showQuickView, setShowQuickView] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const baseUrl = import.meta.env.VITE_API_BASE_URL;
 
   const handleAddToCart = async () => {
-    if (!userData?.nameid) {
+    if (!user?.nameid) {
       toast({
         title: "Login Required",
         description: "Please login to add items to cart",
@@ -33,7 +36,7 @@ export const ProductCard = ({ product }: ProductCardProps) => {
 
     try {
       setIsLoading(true);
-      await apiClient.addToCart(userData.nameid, product.id, 1);
+      await apiClient.addToCart(user.nameid, product.id, 1);
       toast({
         title: "Added to Cart",
         description: `${product.name} has been added to your cart`,
@@ -158,10 +161,10 @@ export const ProductCard = ({ product }: ProductCardProps) => {
           <Button
             onClick={handleAddToCart}
             className="w-full bg-blue-600 hover:bg-blue-700"
-            disabled={!product.canAddToCart}
+            disabled={!product.canAddToCart || isLoading}
           >
             <ShoppingCart className="h-4 w-4 mr-2" />
-            Add to Cart
+            {isLoading ? 'Adding...' : 'Add to Cart'}
           </Button>
         </div>
       </div>
@@ -266,10 +269,10 @@ export const ProductCard = ({ product }: ProductCardProps) => {
                     <Button
                       onClick={handleAddToCart}
                       className="w-full bg-blue-600 hover:bg-blue-700"
-                      disabled={!product.canAddToCart}
+                      disabled={!product.canAddToCart || isLoading}
                     >
                       <ShoppingCart className="h-4 w-4 mr-2" />
-                      Add to Cart
+                      {isLoading ? 'Adding...' : 'Add to Cart'}
                     </Button>
                     <Button 
                       variant="outline" 

@@ -13,14 +13,14 @@ import {
 import { useAuth } from '@/contexts/AuthContext';
 import { useCart } from '@/contexts/CartContext';
 import { useNotifications } from '@/hooks/useNotifications';
-import { NotificationDropdown } from './NotificationDropdown';
+import NotificationDropdown from './NotificationDropdown';
 import { AuthModal } from './AuthModal';
 import { useBackendCart } from '@/hooks/useBackendCart';
 
 export const Header = () => {
   const { user, isAuthenticated, logout } = useAuth();
-  const { items, getTotalItems } = useBackendCart(userData?.nameid);
-  const { unreadCount } = useNotifications(user?.id);
+  const { items, getTotalItems } = useBackendCart(user?.nameid);
+  const { unreadCount } = useNotifications(user?.nameid);
   const [searchTerm, setSearchTerm] = useState('');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
