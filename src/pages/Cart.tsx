@@ -15,10 +15,11 @@ export default function Cart() {
   
   useEffect(() => {
     // Get user ID from localStorage or auth context
-    const user = localStorage.getItem('user');
+    const user = localStorage.getItem('userData');
+    console.log('User data from localStorage:', user);
     if (user) {
       const userData = JSON.parse(user);
-      setUserId(userData.id);
+      setUserId(userData.nameid);
     }
   }, []);
 

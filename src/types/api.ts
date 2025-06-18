@@ -213,19 +213,13 @@ export interface Address {
 
 export interface Notification {
   id: number;
-  username: string;
+  email: string;
   userId: number;
   orderId: number;
   title: string;
   message: string;
   type: number;
-  status: number;
-  retryCount: number;
-  lastAttemptAt?: string;
-  nextRetryAt?: string;
-  isDeleted: boolean;
-  createdAt: string;
-  updatedAt: string;
+  orderDate: string;
 }
 
 export interface ApiResponse<T> {

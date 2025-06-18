@@ -16,7 +16,7 @@ export const ProductImageCarousel = ({ images, productName }: ProductImageCarous
   const [selectedImage, setSelectedImage] = useState(0);
   const [thumbnailStartIndex, setThumbnailStartIndex] = useState(0);
   
-  const BASE_URL = import.meta.env.BASE_URL;
+  const BASE_URL = import.meta.env.VITE_API_BASE_URL;
   const thumbnailsPerView = 4;
   const maxThumbnailStart = Math.max(0, images.length - thumbnailsPerView);
 
@@ -64,7 +64,7 @@ export const ProductImageCarousel = ({ images, productName }: ProductImageCarous
                 return (
                   <img
                     key={actualIndex}
-                    src={`${BASE_URL}/${image.imageUrl}` || '/placeholder.svg'}
+                    src={!image.imageUrl.includes('placeholder')?`${BASE_URL}/${image.imageUrl}` : `${image.imageUrl}`}
                     alt={`${productName} ${actualIndex + 1}`}
                     className={`w-16 h-16 object-cover rounded cursor-pointer border-2 transition-all ${
                       selectedImage === actualIndex 

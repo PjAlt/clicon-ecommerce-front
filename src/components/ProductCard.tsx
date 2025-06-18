@@ -19,6 +19,7 @@ export const ProductCard = ({ product }: ProductCardProps) => {
   const { isAuthenticated } = useAuth();
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [showQuickView, setShowQuickView] = useState(false);
+  const baseUrl = import.meta.env.VITE_API_BASE_URL;
 
   const handleAddToCart = () => {
     if (!isAuthenticated) {
@@ -57,7 +58,7 @@ export const ProductCard = ({ product }: ProductCardProps) => {
         {/* Product Image */}
         <div className="relative cursor-pointer" onClick={handleProductClick}>
           <img
-            src={product.images?.[0]?.imageUrl || '/placeholder.svg'}
+            src={product.images?.[0]?.imageUrl.includes('uploads')? `${baseUrl}/${product.images?.[0]?.imageUrl}` : `${product.images?.[0]?.imageUrl}` || '/placeholder.svg'}
             alt={product.name}
             className="w-full h-48 object-cover"
           />

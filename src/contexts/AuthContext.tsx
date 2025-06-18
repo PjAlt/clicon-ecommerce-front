@@ -42,7 +42,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     // Check for existing token on app load
     const token = localStorage.getItem('accessToken');
     const userData = localStorage.getItem('userData');
-    
+    console.log('Token from localStorage:', token);
+    console.log('User data from localStorage:', userData);
     if (token && userData) {
       try {
         const parsedUser = JSON.parse(userData);
@@ -75,7 +76,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         
         
         const userData = jwtDecode<DecodedToken>(response.accessToken);
-        
+        console.log('Decoded user data:', userData);
         setUser(userData);
         localStorage.setItem('userData', JSON.stringify(userData));
       }

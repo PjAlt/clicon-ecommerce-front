@@ -186,6 +186,7 @@ class ApiClient {
 
   // Order Management
   async placeOrder(userId: number, shippingAddress: string, shippingCity: string) {
+    console.log(`Placing order for user ${userId} with address "${shippingAddress}" in city "${shippingCity}"`);
     return this.request('post', '/Order/place-order', { userId, shippingAddress, shippingCity });
   }
 

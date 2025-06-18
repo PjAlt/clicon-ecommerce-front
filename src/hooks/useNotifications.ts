@@ -1,35 +1,47 @@
-
-import { useState, useEffect } from 'react';
-import * as signalR from '@microsoft/signalr';
+import { useState, useEffect, useRef } from 'react';
+import { HubConnectionBuilder, LogLevel, HubConnectionState, HubConnection } from "@microsoft/signalr";
 import { toast } from '@/hooks/use-toast';
 import { Notification } from '@/types/api';
 
 export const useNotifications = (userId?: number) => {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
-  const [connection, setConnection] = useState<signalR.HubConnection | null>(null);
+  const [connection, setConnection] = useState<HubConnection | null>(null);
+  const connectionRef = useRef<HubConnection | null>(null);
 
   useEffect(() => {
     if (!userId) return;
 
-    const newConnection = new signalR.HubConnectionBuilder()
-      .withUrl('https://localhost:7028/notificationHub')
+    // Get token from localStorage
+    const token = localStorage.getItem('accessToken');
+    
+    const remote = "http://110.34.2.30:5010/";
+    const local = "https://localhost:7010/";
+    const localack = "https://localhost:7028/api/notification/acknowledge";
+    const remoteack = "http://103.140.0.164:7085/api/notification/acknowledge";
+
+    const conn = new HubConnectionBuilder()
+      .withUrl(`${local}hubs/notificationhub`, {
+        accessTokenFactory: async () => token || '',
+      })
       .withAutomaticReconnect()
+      .configureLogging(LogLevel.Information)
       .build();
+
+    connectionRef.current = conn;
+    setConnection(conn);
 
     const startConnection = async () => {
       try {
-        await newConnection.start();
+        await conn.start();
         console.log('SignalR Connected');
         
-        // Join user group
-        await newConnection.invoke('JoinUserGroup', userId.toString());
-        
+
         // Listen for new notifications
-        newConnection.on('ReceiveNotification', (notification: Notification) => {
+        conn.on('ReceiveNotification', async (notification: Notification) => {
           setNotifications(prev => [notification, ...prev]);
           setUnreadCount(prev => prev + 1);
-          
+
           // Show toast notification
           toast({
             title: notification.title,
@@ -37,8 +49,6 @@ export const useNotifications = (userId?: number) => {
             duration: 5000,
           });
         });
-
-        setConnection(newConnection);
       } catch (error) {
         console.error('SignalR Connection Error:', error);
       }
@@ -47,16 +57,16 @@ export const useNotifications = (userId?: number) => {
     startConnection();
 
     return () => {
-      if (newConnection) {
-        newConnection.stop();
+      if (connectionRef.current) {
+        connectionRef.current.stop();
       }
     };
   }, [userId]);
 
   const markAsRead = (notificationId: number) => {
-    setNotifications(prev => 
-      prev.map(notif => 
-        notif.id === notificationId 
+    setNotifications(prev =>
+      prev.map(notif =>
+        notif.id === notificationId
           ? { ...notif, status: 1 } // Assuming 1 is read status
           : notif
       )
@@ -65,7 +75,7 @@ export const useNotifications = (userId?: number) => {
   };
 
   const markAllAsRead = () => {
-    setNotifications(prev => 
+    setNotifications(prev =>
       prev.map(notif => ({ ...notif, status: 1 }))
     );
     setUnreadCount(0);
@@ -76,6 +86,6 @@ export const useNotifications = (userId?: number) => {
     unreadCount,
     markAsRead,
     markAllAsRead,
-    isConnected: connection?.state === signalR.HubConnectionState.Connected,
+    isConnected: connection?.state === HubConnectionState.Connected,
   };
 };

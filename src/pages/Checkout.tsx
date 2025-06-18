@@ -22,12 +22,13 @@ export default function Checkout() {
   const [shippingCity, setShippingCity] = useState('');
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<string>('');
   const [isProcessingPayment, setIsProcessingPayment] = useState(false);
+  const baseUrl = import.meta.env.VITE_API_BASE_URL;
 
   useEffect(() => {
-    const user = localStorage.getItem('user');
+    const user = localStorage.getItem('userData');
     if (user) {
       const userData = JSON.parse(user);
-      setUserId(userData.id);
+      setUserId(userData.nameid);
     }
   }, []);
 
@@ -82,7 +83,7 @@ export default function Checkout() {
 
       // Step 1: Place Order
       const orderResponse = await placeOrderMutation.mutateAsync();
-      const orderId = (orderResponse as any)?.orderId;
+      const orderId = (orderResponse as any)?.id;
 
       if (!orderId) {
         throw new Error('Failed to create order');
@@ -219,9 +220,9 @@ export default function Checkout() {
                       <div key={method.id} className="flex items-center space-x-3 p-3 border rounded-lg hover:bg-gray-50">
                         <RadioGroupItem value={method.id.toString()} id={`payment-${method.id}`} />
                         <img
-                          src={method.logo || '/placeholder.svg'}
+                          src={`${baseUrl}/${method.logo}` || '/placeholder.svg'}
                           alt={method.name}
-                          className="w-8 h-8 object-contain"
+                          className="w-25 object-contain"
                         />
                         <Label htmlFor={`payment-${method.id}`} className="flex-1 cursor-pointer">
                           {method.name}

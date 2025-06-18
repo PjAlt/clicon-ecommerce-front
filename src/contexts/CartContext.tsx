@@ -32,7 +32,7 @@ export const CartProvider = ({ children }: CartProviderProps) => {
   const userId = (() => {
     try {
       const user = localStorage.getItem('userData');
-      return user ? JSON.parse(user).name_id : undefined;
+      return user ? JSON.parse(user).nameid : undefined;
     } catch {
       return undefined;
     }
@@ -49,7 +49,7 @@ export const CartProvider = ({ children }: CartProviderProps) => {
   } = useBackendCart(userId);
 
   const clearCart = () => {
-    // Implementation for clearing cart if needed
+    // TODO:  Implementation for clearing cart
     console.log('Clear cart not implemented yet');
   };
 
