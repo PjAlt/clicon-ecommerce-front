@@ -201,10 +201,10 @@ class ApiClient {
     if (khaltiPidx) formData.append('KhaltiPidx', khaltiPidx);
     if (status) formData.append('Status', status);
 
-    return this.request('post', '/Payment/verifyPayment', {
-      method: 'POST',
-      body: formData,
-      headers: {}, // Remove Content-Type to let browser set it for FormData
+    return this.request('post', '/Payment/verifyPayment', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
     });
   }
 }

@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQuery, useMutation } from '@tanstack/react-query';
@@ -95,24 +94,35 @@ export default function Checkout() {
         paymentMethodId: parseInt(selectedPaymentMethod),
       });
 
-      const { paymentUrl, paymentRequestId, esewaTransactionId, khaltiPidx } = paymentIntentResponse as any;
+      const paymentData = paymentIntentResponse as any;
 
-      if (paymentUrl) {
-        // Store payment details for verification
-        localStorage.setItem('pendingPayment', JSON.stringify({
-          paymentRequestId,
-          esewaTransactionId,
-          khaltiPidx,
-          orderId,
-        }));
+      // Store payment details for verification after callback
+      localStorage.setItem('pendingPayment', JSON.stringify({
+        paymentRequestId: paymentData.data.id,
+        orderId: orderId,
+        esewaTransactionId: paymentData.data.esewaTransactionId,
+        khaltiPidx: paymentData.data.khaltiPidx,
+        paymentAmount: paymentData.data.paymentAmount,
+        expiresAt: paymentData.data.expiresAt,
+      }));
 
-        // Redirect to payment gateway
-        window.open(paymentUrl, '_blank');
-        
-        // Navigate to payment verification page
-        navigate('/payment-verification');
+      // Check if redirect is required
+      if (paymentData.data.requiresRedirect && paymentData.data.paymentUrl) {
+        // Show instructions to user
+        toast({
+          title: "Redirecting to Payment",
+          description: paymentData.data.instructions || "You will be redirected to complete payment",
+        });
+
+        // Small delay to show the toast, then redirect
+        setTimeout(() => {
+          window.location.href = paymentData.data.paymentUrl;
+        }, 2000);
       } else {
-        throw new Error('No payment URL received');
+        // Handle non-redirect payment methods
+        navigate('/payment/verification', { 
+          state: { paymentRequestId: paymentData.data.id } 
+        });
       }
 
     } catch (error) {

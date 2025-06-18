@@ -13,6 +13,8 @@ import Categories from "./pages/Categories";
 import Cart from "./pages/Cart";
 import Checkout from "./pages/Checkout";
 import PaymentVerification from "./pages/PaymentVerification";
+import EsewaPaymentSuccess from "./pages/EsewaPaymentSuccess";
+import EsewaPaymentFailure from "./pages/EsewaPaymentFailure";
 import TrackOrder from "./pages/TrackOrder";
 import TrackOrderDetails from "./pages/TrackOrderDetails";
 import NotFound from "./pages/NotFound";
@@ -36,6 +38,8 @@ const App = () => (
               <Route path="/cart" element={<Cart />} />
               <Route path="/checkout" element={<Checkout />} />
               <Route path="/payment-verification" element={<PaymentVerification />} />
+              <Route path="/payment/callback/esewa/success" element={<EsewaPaymentSuccess />} />
+              <Route path="/payment/callback/esewa/failure" element={<EsewaPaymentFailure />} />
               <Route path="/track-order" element={<TrackOrder />} />
               <Route path="/track-order-details/:orderId" element={<TrackOrderDetails />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
