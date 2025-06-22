@@ -36,7 +36,8 @@ export const ProductCard = ({ product }: ProductCardProps) => {
 
     try {
       setIsLoading(true);
-      await apiClient.addToCart(user.nameid, product.id, 1);
+      const userId: number = parseInt(user.nameid)??0;
+      await apiClient.addToCart(userId, product.id, 1);
       toast({
         title: "Added to Cart",
         description: `${product.name} has been added to your cart`,

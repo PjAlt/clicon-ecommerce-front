@@ -219,6 +219,8 @@ export interface Notification {
   title: string;
   message: string;
   type: number;
+  status: string;
+  isRead: boolean;
   orderDate: string;
 }
 

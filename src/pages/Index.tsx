@@ -267,7 +267,7 @@ const Index = () => {
                 <div className="bg-gradient-to-r from-blue-500 to-blue-600 text-white p-2 rounded-lg font-bold text-xl">
                   C
                 </div>
-                <span className="text-2xl font-bold">Clicon</span>
+                <span className="text-2xl font-bold">Get-Instant-Mart</span>
               </div>
               <p className="text-gray-400 mb-4">
                 Your trusted marketplace for quality products from verified sellers.
@@ -299,7 +299,7 @@ const Index = () => {
             </div>
           </div>
           <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
-            <p>&copy; 2024 Clicon. All rights reserved.</p>
+            <p>&copy; 2024 Get-Instant-Mart. All rights reserved.</p>
           </div>
         </div>
       </footer>

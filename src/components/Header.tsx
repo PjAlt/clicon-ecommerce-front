@@ -19,8 +19,9 @@ import { useBackendCart } from '@/hooks/useBackendCart';
 
 export const Header = () => {
   const { user, isAuthenticated, logout } = useAuth();
-  const { items, getTotalItems } = useBackendCart(user?.nameid);
-  const { unreadCount } = useNotifications(user?.nameid);
+  const userId = parseInt(user?.nameid) || 0; // Fallback to 0 if user is not authenticated
+  const { items, getTotalItems } = useBackendCart(userId);
+  const { unreadCount } = useNotifications(userId);
   const [searchTerm, setSearchTerm] = useState('');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
@@ -59,10 +60,14 @@ export const Header = () => {
           <div className="flex items-center justify-between">
             {/* Logo */}
             <Link to="/" className="flex items-center space-x-2">
-              <div className="bg-gradient-to-r from-orange-500 to-red-500 text-white p-2 rounded-lg font-bold text-xl">
+              {/* <div className="bg-gradient-to-r from-orange-500 to-red-500 text-white p-2 rounded-lg font-bold text-xl">
                 C
               </div>
-              <span className="text-2xl font-bold text-gray-900">Clicon</span>
+              <span className="text-2xl font-bold text-gray-900">Get-Instant-Mart</span> */}
+              <div className="bg-gradient-to-r from-orange-500 to-red-500 text-white p-2 rounded-lg font-bold text-xl">
+                <img src="../resources/logo.jpg" alt="GetInstantMart Logo" className="h-8 w-8" />
+              </div>
+              <span className="text-2xl font-bold text-gray-900">GetInstantMart</span>
             </Link>
 
             {/* Search Bar - Desktop */}

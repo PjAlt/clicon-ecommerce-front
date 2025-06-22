@@ -17,7 +17,7 @@ export const useNotifications = (userId?: number) => {
     
     const remote = "http://110.34.2.30:5010/";
     const local = "https://localhost:7010/";
-    const localack = "https://localhost:7028/api/notification/acknowledge";
+    const localack = "https://localhost:7028/api/notif/acknowledge-notification";
     const remoteack = "http://103.140.0.164:7085/api/notification/acknowledge";
 
     const conn = new HubConnectionBuilder()
