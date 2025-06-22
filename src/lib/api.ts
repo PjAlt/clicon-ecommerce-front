@@ -1,3 +1,4 @@
+
 import axios, { AxiosInstance } from 'axios';
 import { QueryClient } from '@tanstack/react-query';
 
@@ -205,6 +206,27 @@ class ApiClient {
         'Content-Type': 'multipart/form-data',
       },
     });
+  }
+
+  // ---------- Notification Management ----------
+  // Get notifications with pagination
+  async getNotifications(userId: number, pageNumber = 1, pageSize = 10) {
+    return this.request('get', `/notif/getAllNotificationsByUserId?userId=${userId}&pageNumber=${pageNumber}&pageSize=${pageSize}`);
+  }
+
+  // Acknowledge notification (status: Delivered)
+  async acknowledgeNotification(notificationId: number) {
+    return this.request('post', `/notif/acknowledge-notification?notificationId=${notificationId}`, {});
+  }
+
+  // Mark notifications as read (single or bulk)
+  async markNotificationsAsRead(notificationIds: number[]) {
+    return this.request('post', '/notif/mark-as-read', notificationIds);
+  }
+
+  // Delete notification (placeholder - implement if backend supports)
+  async deleteNotification(notificationId: number) {
+    return this.request('delete', `/notif/delete-notification?notificationId=${notificationId}`);
   }
 }
 

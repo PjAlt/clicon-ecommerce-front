@@ -19,8 +19,8 @@ import { useBackendCart } from '@/hooks/useBackendCart';
 
 export const Header = () => {
   const { user, isAuthenticated, logout } = useAuth();
-  const userId = parseInt(user?.nameid) || 0; // Fallback to 0 if user is not authenticated
-  const { items, getTotalItems } = useBackendCart(userId);
+  const userId = user?.nameid ? parseInt(user.nameid, 10) : undefined;
+  const { items, getTotalItems } = useBackendCart(userId || 0);
   const { unreadCount } = useNotifications(userId);
   const [searchTerm, setSearchTerm] = useState('');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -60,10 +60,6 @@ export const Header = () => {
           <div className="flex items-center justify-between">
             {/* Logo */}
             <Link to="/" className="flex items-center space-x-2">
-              {/* <div className="bg-gradient-to-r from-orange-500 to-red-500 text-white p-2 rounded-lg font-bold text-xl">
-                C
-              </div>
-              <span className="text-2xl font-bold text-gray-900">Get-Instant-Mart</span> */}
               <div className="bg-gradient-to-r from-orange-500 to-red-500 text-white p-2 rounded-lg font-bold text-xl">
                 <img src="../resources/logo.jpg" alt="GetInstantMart Logo" className="h-8 w-8" />
               </div>

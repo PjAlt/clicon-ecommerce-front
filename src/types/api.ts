@@ -211,14 +211,15 @@ export interface Address {
   postalCode: string;
 }
 
+// Updated Notification interface to match backend API response
 export interface Notification {
   id: number;
-  email: string;
   userId: number;
+  email: string;
   orderId: number;
   title: string;
   message: string;
-  type: number;
+  type: string;
   status: string;
   isRead: boolean;
   orderDate: string;
