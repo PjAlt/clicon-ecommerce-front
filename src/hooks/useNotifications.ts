@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { HubConnectionBuilder, LogLevel, HubConnectionState, HubConnection } from "@microsoft/signalr";
 import { toast } from '@/hooks/use-toast';
@@ -34,11 +33,11 @@ export const useNotifications = (userId?: number) => {
 
     try {
       const response = await apiClient.getNotifications(userId, page, pageSize);
-      const newNotifications = response || [];
+      const newNotifications = Array.isArray(response) ? response : (response as any)?.data || [];
 
       setState(prev => {
         const existingIds = new Set(prev.notifications.map(n => n.id));
-        const uniqueNewNotifications = newNotifications.filter(n => !existingIds.has(n.id));
+        const uniqueNewNotifications = newNotifications.filter((n: Notification) => !existingIds.has(n.id));
         
         const updatedNotifications = append 
           ? [...prev.notifications, ...uniqueNewNotifications]

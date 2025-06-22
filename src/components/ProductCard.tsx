@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ShoppingCart, Heart, Star, Eye } from 'lucide-react';
@@ -15,10 +14,10 @@ interface ProductCardProps {
   className?: string;
 }
 
-export default function ProductCard({ product, className = '' }: ProductCardProps) {
+export const ProductCard = ({ product, className = '' }: ProductCardProps) => {
   const { user } = useAuth();
   const userId = user?.nameid ? parseInt(user.nameid, 10) : 0;
-  const { addItem } = useBackendCart(userId);
+  const { addToCart } = useBackendCart(userId);
   const [isLoading, setIsLoading] = useState(false);
 
   const handleAddToCart = async () => {
@@ -33,7 +32,7 @@ export default function ProductCard({ product, className = '' }: ProductCardProp
 
     setIsLoading(true);
     try {
-      await addItem(product.id, 1);
+      addToCart(product.id, 1);
       toast({
         title: "Added to Cart",
         description: `${product.name} has been added to your cart`,
@@ -183,4 +182,6 @@ export default function ProductCard({ product, className = '' }: ProductCardProp
       </CardContent>
     </Card>
   );
-}
+};
+
+export default ProductCard;

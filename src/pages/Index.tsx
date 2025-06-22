@@ -1,7 +1,6 @@
-
 import { useQuery } from '@tanstack/react-query';
 import { Header } from '@/components/Header';
-import { ProductCard } from '@/components/ProductCard';
+import ProductCard from '@/components/ProductCard';
 import { apiClient } from '@/lib/api';
 import { Product, Category, BannerEvent } from '@/types/api';
 import { Button } from '@/components/ui/button';
