@@ -35,7 +35,13 @@ export const ProductImageCarousel = ({ images, productName }: ProductImageCarous
       {/* Main Image Display */}
       <div className="bg-white rounded-lg p-4 border">
         <img
-          src={`${BASE_URL}/${images[selectedImage]?.imageUrl}` || '/placeholder.svg'}
+          src={
+    images[selectedImage]?.imageUrl
+      ? images[selectedImage].imageUrl.startsWith('http')
+        ? images[selectedImage].imageUrl
+        : `${BASE_URL}/${images[selectedImage].imageUrl.replace(/^\/+/, '')}`
+      : '/placeholder.svg'
+          }
           alt={productName}
           className="w-full h-96 object-cover rounded-lg"
         />
@@ -60,21 +66,26 @@ export const ProductImageCarousel = ({ images, productName }: ProductImageCarous
             {/* Thumbnails */}
             <div className="flex space-x-2 overflow-hidden">
               {visibleThumbnails.map((image, index) => {
-                const actualIndex = thumbnailStartIndex + index;
-                return (
-                  <img
-                    key={actualIndex}
-                    src={!image.imageUrl.includes('placeholder')?`${BASE_URL}/${image.imageUrl}` : `${image.imageUrl}`}
-                    alt={`${productName} ${actualIndex + 1}`}
-                    className={`w-16 h-16 object-cover rounded cursor-pointer border-2 transition-all ${
-                      selectedImage === actualIndex 
-                        ? 'border-blue-500 ring-2 ring-blue-200' 
-                        : 'border-gray-200 hover:border-gray-300'
-                    }`}
-                    onClick={() => setSelectedImage(actualIndex)}
-                  />
-                );
-              })}
+  const actualIndex = thumbnailStartIndex + index;
+  const thumbUrl = image.imageUrl
+    ? image.imageUrl.startsWith('http')
+      ? image.imageUrl
+      : `${BASE_URL}/${image.imageUrl.replace(/^\/+/, '')}`
+    : '/placeholder.svg';
+  return (
+    <img
+      key={actualIndex}
+      src={thumbUrl}
+      alt={`${productName} ${actualIndex + 1}`}
+      className={`w-16 h-16 object-cover rounded cursor-pointer border-2 transition-all ${
+        selectedImage === actualIndex 
+          ? 'border-blue-500 ring-2 ring-blue-200' 
+          : 'border-gray-200 hover:border-gray-300'
+      }`}
+      onClick={() => setSelectedImage(actualIndex)}
+    />
+  );
+})}
             </div>
 
             {/* Right Arrow */}

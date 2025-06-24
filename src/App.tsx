@@ -38,7 +38,8 @@ const App = () => (
               <Route path="/category/:categoryId" element={<Shop />} />
               <Route path="/cart" element={<Cart />} />
               <Route path="/checkout" element={<Checkout />} />
-              <Route path="/payment-verification" element={<PaymentVerification />} />
+              <Route path="/payment/success" element={<PaymentVerification />} />
+              <Route path="/payment/verification" element={<PaymentVerification />} />
               <Route path="/payment/callback/esewa/success" element={<EsewaPaymentSuccess />} />
               <Route path="/payment/callback/esewa/failure" element={<EsewaPaymentFailure />} />
               <Route path="/track-order" element={<TrackOrder />} />

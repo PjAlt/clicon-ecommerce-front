@@ -58,10 +58,13 @@ export const ProductCard = ({ product, className = '' }: ProductCardProps) => {
     setIsQuickViewOpen(true);
   };
 
-  const primaryImage = product.images?.find(img => img.isMain) || product.images?.[0];
-  const imageUrl = primaryImage?.imageUrl 
-    ? `${import.meta.env.VITE_API_BASE_URL}${primaryImage.imageUrl}`
-    : '/placeholder.svg';
+  const BASE_URL = import.meta.env.VITE_API_BASE_URL;
+const primaryImage = product.images?.find(img => img.isMain) || product.images?.[0];
+const imageUrl = primaryImage?.imageUrl
+  ? primaryImage.imageUrl.startsWith('http')
+    ? primaryImage.imageUrl
+    : `${BASE_URL}/${primaryImage.imageUrl.replace(/^\/+/, '')}`
+  : '/placeholder.svg';
 
   const discountPercentage = product.hasProductDiscount
     ? Math.round(((product.marketPrice - product.currentPrice) / product.marketPrice) * 100)
