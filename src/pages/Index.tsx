@@ -49,36 +49,49 @@ const Index = () => {
       <Header />
       
       {/* Hero Banner Carousel */}
-      <section className="bg-gradient-to-r from-blue-600 to-blue-800 text-white">
+      <section className="bg-gradient-to-r from-blue-600 to-blue-800 text-white relative overflow-hidden">
         <div className="container mx-auto px-4">
           <Carousel className="w-full">
             <CarouselContent>
-              {bannerEvents.length > 0 ? bannerEvents.map((event: any) => (
-                <CarouselItem key={event.id}>
-                  <div className="py-20">
-                    <div className="max-w-2xl">
-                      <span className="inline-block bg-red-500 text-white px-3 py-1 rounded-full text-sm font-semibold mb-4">
-                        {event.statusBadge}
-                      </span>
-                      <h1 className="text-5xl font-bold mb-6">
-                        {event.name}
-                      </h1>
-                      <p className="text-xl mb-8 opacity-90">
-                        {event.description}
-                      </p>
-                      <div className="flex items-center space-x-4 mb-8">
-                        <span className="text-3xl font-bold text-yellow-300">
-                          {event.formattedDiscount}
+              {bannerEvents.length > 0 ? bannerEvents.map((event: any) => {
+                const imageUrl = event.images?.[0]?.imageUrl 
+                  ? `${import.meta.env.VITE_API_BASE_URL || 'http://110.34.2.30:5013'}/${event.images[0].imageUrl}`
+                  : '/placeholder.svg';
+                
+                return (
+                  <CarouselItem key={event.id}>
+                    <div className="relative py-20 min-h-[500px] flex items-center">
+                      {/* Background Image */}
+                      <div 
+                        className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-30"
+                        style={{ backgroundImage: `url(${imageUrl})` }}
+                      />
+                      
+                      {/* Content */}
+                      <div className="relative z-10 max-w-2xl">
+                        <span className="inline-block bg-red-500 text-white px-3 py-1 rounded-full text-sm font-semibold mb-4">
+                          {event.statusBadge || 'Special Offer'}
                         </span>
+                        <h1 className="text-5xl font-bold mb-6">
+                          {event.name}
+                        </h1>
+                        <p className="text-xl mb-8 opacity-90">
+                          {event.description}
+                        </p>
+                        <div className="flex items-center space-x-4 mb-8">
+                          <span className="text-3xl font-bold text-yellow-300">
+                            {event.formattedDiscount || 'Limited Time'}
+                          </span>
+                        </div>
+                        <Button size="lg" className="bg-white text-blue-600 hover:bg-gray-100">
+                          Shop Now
+                          <ArrowRight className="ml-2 h-5 w-5" />
+                        </Button>
                       </div>
-                      <Button size="lg" className="bg-white text-blue-600 hover:bg-gray-100">
-                        Shop Now
-                        <ArrowRight className="ml-2 h-5 w-5" />
-                      </Button>
                     </div>
-                  </div>
-                </CarouselItem>
-              )) : (
+                  </CarouselItem>
+                );
+              }) : (
                 <CarouselItem>
                   <div className="py-20">
                     <div className="max-w-2xl">
@@ -291,7 +304,7 @@ const Index = () => {
             <div>
               <h4 className="font-semibold mb-4">Customer Service</h4>
               <ul className="space-y-2 text-gray-400">
-                <li><a href="#" className="hover:text-white transition-colors">Track Order</a></li>
+                <li><a href="/track-order" className="hover:text-white transition-colors">Track Order</a></li>
                 <li><a href="#" className="hover:text-white transition-colors">Returns</a></li>
                 <li><a href="#" className="hover:text-white transition-colors">Support</a></li>
               </ul>

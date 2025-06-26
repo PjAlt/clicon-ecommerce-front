@@ -210,6 +210,15 @@ class ApiClient {
     });
   }
 
+  // Orders
+  async getAllOrdersByUserId(userId: number, pageNumber = 1, pageSize = 10) {
+    return this.request('get', `/Order/getAllOrderByUserId?UserId=${userId}&PageNumber=${pageNumber}&PageSize=${pageSize}`);
+  }
+
+  async getOrderById(orderId: number) {
+    return this.request('get', `/Order/getOrderById?orderId=${orderId}`);
+  }
+
   // ---------- Notification Management ----------
   // Get notifications with pagination
   async getNotifications(userId: number, pageNumber = 1, pageSize = 10) {
@@ -229,6 +238,11 @@ class ApiClient {
   // Delete notification (placeholder - implement if backend supports)
   async deleteNotification(notificationId: number) {
     return this.request('delete', `/notif/delete-notification?notificationId=${notificationId}`);
+  }
+
+  // Get latest payment (for payment verification)
+  async getLatestPayment(userId: number) {
+    return this.request('get', `/payment/latest?userId=${userId}`);
   }
 }
 

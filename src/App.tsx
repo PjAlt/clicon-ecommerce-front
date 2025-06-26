@@ -17,6 +17,8 @@ import EsewaPaymentSuccess from "./pages/EsewaPaymentSuccess";
 import EsewaPaymentFailure from "./pages/EsewaPaymentFailure";
 import TrackOrder from "./pages/TrackOrder";
 import TrackOrderDetails from "./pages/TrackOrderDetails";
+import OrderHistory from "./pages/OrderHistory";
+import OrderDetail from "./pages/OrderDetail";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -44,6 +46,8 @@ const App = () => (
               <Route path="/payment/callback/esewa/failure" element={<EsewaPaymentFailure />} />
               <Route path="/track-order" element={<TrackOrder />} />
               <Route path="/track-order-details/:orderId" element={<TrackOrderDetails />} />
+              <Route path="/orders" element={<OrderHistory />} />
+              <Route path="/orders/:orderId" element={<OrderDetail />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>
