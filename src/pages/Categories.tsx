@@ -5,6 +5,8 @@ import { Header } from '@/components/Header';
 import { Category } from '@/types/api';
 import { apiClient } from '@/lib/api';
 import { toast } from '@/hooks/use-toast';
+import { API_BASE_URL } from '@/lib/api';
+
 
 export default function Categories() {
   const [categories, setCategories] = useState<Category[]>([]);
@@ -16,6 +18,7 @@ export default function Categories() {
       try {
         setLoading(true);
         const response = await apiClient.getCategories();
+        console.log('Fetched categories:', response);
         setCategories((response as any)?.data || []);
       } catch (error) {
         console.error('Error fetching categories:', error);
@@ -65,7 +68,13 @@ export default function Categories() {
               >
                 <div className="h-48 bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center">
                   <img
-                    src={category.imageUrl || '/placeholder.svg'}
+                  src={
+                  category.imageUrl
+                    ? category.imageUrl.startsWith('http')
+                      ? category.imageUrl
+                      : `${API_BASE_URL}/${category.imageUrl.replace(/^\/+/, '')}`
+                    : '/placeholder.svg'
+  }
                     alt={category.name}
                     className="w-full h-full object-cover"
                   />

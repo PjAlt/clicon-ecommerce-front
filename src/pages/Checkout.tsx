@@ -106,7 +106,7 @@ export default function Checkout() {
         expiresAt: paymentData.data.expiresAt,
       }));
 
-      // Check if redirect is required
+      // step 3 : Redirect to payment provider
       if (paymentData.data.requiresRedirect && paymentData.data.paymentUrl) {
         // Show instructions to user
         toast({
@@ -225,14 +225,14 @@ export default function Checkout() {
               </CardHeader>
               <CardContent>
                 <RadioGroup value={selectedPaymentMethod} onValueChange={setSelectedPaymentMethod}>
-                  <div className="space-y-3">
+                  <div className="space-y-1">
                     {paymentMethods.map((method: PaymentMethod) => (
                       <div key={method.id} className="flex items-center space-x-3 p-3 border rounded-lg hover:bg-gray-50">
                         <RadioGroupItem value={method.id.toString()} id={`payment-${method.id}`} />
                         <img
                           src={`${baseUrl}/${method.logo}` || '/placeholder.svg'}
                           alt={method.name}
-                          className="w-25 object-contain"
+                          className="w-10 object-contain"
                         />
                         <Label htmlFor={`payment-${method.id}`} className="flex-1 cursor-pointer">
                           {method.name}

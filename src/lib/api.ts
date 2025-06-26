@@ -2,7 +2,9 @@
 import axios, { AxiosInstance } from 'axios';
 import { QueryClient } from '@tanstack/react-query';
 
-export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+//export const API_BASE_URL = "https://localhost:7028";
+export const API_BASE_URL = "http://110.34.2.30:5013"; // Replace with your actual API base URL
+
 
 // Setup the centralized Axios instance
 const api: AxiosInstance = axios.create({
