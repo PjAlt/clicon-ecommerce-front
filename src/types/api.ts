@@ -1,4 +1,3 @@
-
 // API Response Types
 export interface Product {
   id: number;
@@ -254,4 +253,33 @@ export interface CartItem {
   updatedAt: string;
   isDeleted: boolean;
   product: Product;
+}
+
+export interface OrderItem {
+  productId: number;
+  quantity: number;
+  unitPrice: number;
+  formattedTotalPrice: string;
+}
+
+export interface Order {
+  id: number;
+  userId: number;
+  orderDate: string;
+  orderStatus: string;
+  paymentStatus: string;
+  totalAmount: number;
+  shippingAddress: string;
+  shippingCity: string;
+  items: OrderItem[];
+}
+
+export interface OrdersResponse {
+  message: string;
+  data: Order[];
+}
+
+export interface OrderDetailResponse {
+  message: string;
+  data: Order;
 }

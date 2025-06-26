@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
@@ -9,25 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { apiClient } from '@/lib/api';
 import { format } from 'date-fns';
-
-interface OrderItem {
-  productId: number;
-  quantity: number;
-  unitPrice: number;
-  formattedTotalPrice: string;
-}
-
-interface Order {
-  id: number;
-  userId: number;
-  orderDate: string;
-  orderStatus: string;
-  paymentStatus: string;
-  totalAmount: number;
-  shippingAddress: string;
-  shippingCity: string;
-  items: OrderItem[];
-}
+import { Order } from '@/types/api';
 
 export default function OrderHistory() {
   const navigate = useNavigate();

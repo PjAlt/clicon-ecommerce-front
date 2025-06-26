@@ -1,4 +1,3 @@
-
 import { useQuery } from '@tanstack/react-query';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Package, MapPin, Calendar, CreditCard, User } from 'lucide-react';
@@ -9,25 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { apiClient } from '@/lib/api';
 import { format } from 'date-fns';
-
-interface OrderItem {
-  productId: number;
-  quantity: number;
-  unitPrice: number;
-  formattedTotalPrice: string;
-}
-
-interface OrderDetail {
-  id: number;
-  userId: number;
-  orderDate: string;
-  orderStatus: string;
-  paymentStatus: string;
-  totalAmount: number;
-  shippingAddress: string;
-  shippingCity: string;
-  items: OrderItem[];
-}
+import { Order } from '@/types/api';
 
 export default function OrderDetail() {
   const { orderId } = useParams<{ orderId: string }>();
@@ -39,7 +20,7 @@ export default function OrderDetail() {
     enabled: !!orderId,
   });
 
-  const order: OrderDetail = orderResponse?.data;
+  const order: Order | undefined = orderResponse?.data;
 
   const getStatusColor = (status: string) => {
     switch (status.toLowerCase()) {

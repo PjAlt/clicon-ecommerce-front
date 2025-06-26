@@ -1,6 +1,6 @@
-
 import axios, { AxiosInstance } from 'axios';
 import { QueryClient } from '@tanstack/react-query';
+import { OrdersResponse, OrderDetailResponse } from '@/types/api';
 
 //export const API_BASE_URL = "https://localhost:7028";
 export const API_BASE_URL = "http://110.34.2.30:5013"; // Replace with your actual API base URL
@@ -211,11 +211,11 @@ class ApiClient {
   }
 
   // Orders
-  async getAllOrdersByUserId(userId: number, pageNumber = 1, pageSize = 10) {
+  async getAllOrdersByUserId(userId: number, pageNumber = 1, pageSize = 10): Promise<OrdersResponse> {
     return this.request('get', `/Order/getAllOrderByUserId?UserId=${userId}&PageNumber=${pageNumber}&PageSize=${pageSize}`);
   }
 
-  async getOrderById(orderId: number) {
+  async getOrderById(orderId: number): Promise<OrderDetailResponse> {
     return this.request('get', `/Order/getOrderById?orderId=${orderId}`);
   }
 
