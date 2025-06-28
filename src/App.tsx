@@ -15,6 +15,7 @@ import Checkout from "./pages/Checkout";
 import PaymentVerification from "./pages/PaymentVerification";
 import EsewaPaymentSuccess from "./pages/EsewaPaymentSuccess";
 import EsewaPaymentFailure from "./pages/EsewaPaymentFailure";
+import KhaltiPaymentFailure from "./pages/KhaltiPaymentFailure";
 import TrackOrder from "./pages/TrackOrder";
 import TrackOrderDetails from "./pages/TrackOrderDetails";
 import OrderHistory from "./pages/OrderHistory";
@@ -44,6 +45,8 @@ const App = () => (
               <Route path="/payment/verification" element={<PaymentVerification />} />
               <Route path="/payment/callback/esewa/success" element={<EsewaPaymentSuccess />} />
               <Route path="/payment/callback/esewa/failure" element={<EsewaPaymentFailure />} />
+              <Route path="/payment/esewa-failure" element={<EsewaPaymentFailure />} />
+              <Route path="/payment/khalti-failure" element={<KhaltiPaymentFailure />} />
               <Route path="/track-order" element={<TrackOrder />} />
               <Route path="/track-order-details/:orderId" element={<TrackOrderDetails />} />
               <Route path="/orders" element={<OrderHistory />} />
