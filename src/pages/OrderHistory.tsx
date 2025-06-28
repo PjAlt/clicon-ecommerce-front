@@ -1,4 +1,5 @@
-import { useState } from 'react';
+
+import { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { Package, Calendar, MapPin, CreditCard } from 'lucide-react';
@@ -6,35 +7,81 @@ import { Header } from '@/components/Header';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/contexts/AuthContext';
 import { apiClient } from '@/lib/api';
 import { format } from 'date-fns';
 import { Order } from '@/types/api';
 
 export default function OrderHistory() {
   const navigate = useNavigate();
+  const { toast } = useToast();
+  const { user, isAuthenticated, isLoading: authLoading } = useAuth();
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 10;
 
-  // Get user ID from localStorage
+  // Get user ID from auth context or localStorage as fallback
   const getUserId = () => {
+    if (user?.id) {
+      console.log('User ID from auth context:', user.id);
+      return user.id;
+    }
+    
+    // Fallback to localStorage
     const userData = localStorage.getItem('userData');
     if (userData) {
       try {
         const parsed = JSON.parse(userData);
-        return parsed.id || parsed.userId;
-      } catch {
+        const userId = parsed.id || parsed.userId;
+        console.log('User ID from localStorage:', userId);
+        return userId;
+      } catch (error) {
+        console.error('Error parsing userData from localStorage:', error);
         return null;
       }
     }
+    
+    console.log('No user ID found');
     return null;
   };
 
   const userId = getUserId();
 
+  // Check authentication state and redirect if needed
+  useEffect(() => {
+    if (!authLoading && !isAuthenticated && !userId) {
+      console.log('User not authenticated, redirecting to home');
+      toast({
+        title: "Authentication Required",
+        description: "Please log in to view your order history.",
+        variant: "destructive",
+      });
+      navigate('/');
+    }
+  }, [authLoading, isAuthenticated, userId, navigate, toast]);
+
   const { data: ordersResponse, isLoading, error } = useQuery({
     queryKey: ['orders', userId, currentPage],
-    queryFn: () => apiClient.getAllOrdersByUserId(userId, currentPage, pageSize),
-    enabled: !!userId,
+    queryFn: async () => {
+      console.log('Fetching orders for user ID:', userId);
+      try {
+        const response = await apiClient.getAllOrdersByUserId(userId, currentPage, pageSize);
+        console.log('Orders response:', response);
+        return response;
+      } catch (err) {
+        console.error('Error fetching orders:', err);
+        if (err.response?.status === 401) {
+          toast({
+            title: "Session Expired",
+            description: "Your session has expired. Please login again.",
+            variant: "destructive",
+          });
+          navigate('/');
+        }
+        throw err;
+      }
+    },
+    enabled: !!userId && isAuthenticated,
   });
 
   const orders: Order[] = ordersResponse?.data || [];
@@ -56,13 +103,32 @@ export default function OrderHistory() {
     }
   };
 
-  if (!userId) {
+  // Show loading while auth is being checked
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <Header />
+        <div className="container mx-auto px-4 py-8">
+          <div className="animate-pulse space-y-6">
+            <div className="h-8 bg-gray-200 rounded w-1/4"></div>
+            {[...Array(5)].map((_, i) => (
+              <div key={i} className="h-40 bg-gray-200 rounded"></div>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Show login prompt if not authenticated
+  if (!isAuthenticated && !userId) {
     return (
       <div className="min-h-screen bg-gray-50">
         <Header />
         <div className="container mx-auto px-4 py-8">
           <div className="text-center">
             <h1 className="text-2xl font-bold text-gray-900 mb-4">Please log in to view your orders</h1>
+            <p className="text-gray-600 mb-6">You need to be logged in to access your order history.</p>
             <Button onClick={() => navigate('/')}>Go to Home</Button>
           </div>
         </div>
@@ -93,6 +159,7 @@ export default function OrderHistory() {
         <div className="container mx-auto px-4 py-8">
           <div className="text-center">
             <h1 className="text-2xl font-bold text-gray-900 mb-4">Error loading orders</h1>
+            <p className="text-gray-600 mb-4">There was an error loading your orders. Please try again.</p>
             <Button onClick={() => window.location.reload()}>Try Again</Button>
           </div>
         </div>
@@ -108,6 +175,9 @@ export default function OrderHistory() {
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">Order History</h1>
           <p className="text-gray-600">Track and manage your orders</p>
+          {user && (
+            <p className="text-sm text-gray-500 mt-1">Logged in as: {user.email}</p>
+          )}
         </div>
 
         {orders.length === 0 ? (

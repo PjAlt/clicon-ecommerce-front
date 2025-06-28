@@ -44,14 +44,28 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     const userData = localStorage.getItem('userData');
     console.log('Token from localStorage:', token);
     console.log('User data from localStorage:', userData);
+    
     if (token && userData) {
       try {
-        const parsedUser = JSON.parse(userData);
-        setUser(parsedUser);
-        apiClient.setToken(token);
+        // Verify token is not expired
+        const decodedToken = jwtDecode(token);
+        const currentTime = Date.now() / 1000;
+        
+        if (decodedToken.exp && decodedToken.exp > currentTime) {
+          const parsedUser = JSON.parse(userData);
+          setUser(parsedUser);
+          apiClient.setToken(token);
+          console.log('User authenticated from localStorage:', parsedUser);
+        } else {
+          console.log('Token expired, clearing localStorage');
+          localStorage.removeItem('accessToken');
+          localStorage.removeItem('refreshToken');
+          localStorage.removeItem('userData');
+        }
       } catch (error) {
-        console.error('Error parsing stored user data:', error);
+        console.error('Error parsing stored user data or token:', error);
         localStorage.removeItem('accessToken');
+        localStorage.removeItem('refreshToken');
         localStorage.removeItem('userData');
       }
     }
@@ -66,25 +80,38 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     nameid: string;
     unique_name: string;
   }
+
   const login = async (email: string, password: string): Promise<AuthResponse> => {
     try {
       const response = await apiClient.login(email, password) as AuthResponse;
       
-      if (response.success) {
-        apiClient.setToken(response.accessToken);
+      if (response.success && response.accessToken) {
+        // Store token first
+        localStorage.setItem('accessToken', response.accessToken);
         localStorage.setItem('refreshToken', response.refreshToken);
+        apiClient.setToken(response.accessToken);
         
+        // Decode and store user data
+        const decodedUser = jwtDecode<DecodedToken>(response.accessToken);
+        console.log('Decoded user data:', decodedUser);
         
-        const userData = jwtDecode<DecodedToken>(response.accessToken);
-        console.log('Decoded user data:', userData);
-        setUser(userData);
-        localStorage.setItem('userData', JSON.stringify(userData));
+        // Create user object with proper structure
+        const userObj = {
+          id: parseInt(decodedUser.nameid),
+          email: decodedUser.email,
+          name: decodedUser.unique_name,
+          exp: decodedUser.exp,
+          iat: decodedUser.iat
+        };
+        
+        setUser(userObj);
+        localStorage.setItem('userData', JSON.stringify(userObj));
+        console.log('User logged in successfully:', userObj);
       }
       
       return response;
     } catch (error) {
       console.error('Login error:', error);
-      // Return a proper AuthResponse for error cases
       return {
         success: false,
         accessToken: '',
@@ -122,6 +149,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   };
 
   const logout = () => {
+    console.log('Logging out user');
     setUser(null);
     apiClient.clearToken();
     localStorage.removeItem('accessToken');

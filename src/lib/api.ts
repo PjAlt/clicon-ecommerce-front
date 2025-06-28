@@ -1,10 +1,10 @@
+
 import axios, { AxiosInstance } from 'axios';
 import { QueryClient } from '@tanstack/react-query';
 import { OrdersResponse, OrderDetailResponse } from '@/types/api';
 
 //export const API_BASE_URL = "https://localhost:7028";
 export const API_BASE_URL = "http://110.34.2.30:5013"; // Replace with your actual API base URL
-
 
 // Setup the centralized Axios instance
 const api: AxiosInstance = axios.create({
@@ -18,22 +18,32 @@ const api: AxiosInstance = axios.create({
 api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('accessToken');
+    console.log('API Request - Token found:', !!token);
     if (token && config.headers) {
       config.headers.Authorization = `Bearer ${token}`;
+      console.log('API Request - Authorization header set');
     }
     return config;
   },
-  (error) => Promise.reject(error)
+  (error) => {
+    console.error('API Request interceptor error:', error);
+    return Promise.reject(error);
+  }
 );
 
 // Global error handler - auto-logout on 401/403
 api.interceptors.response.use(
-  resp => resp,
+  resp => {
+    console.log('API Response success:', resp.config.url, resp.status);
+    return resp;
+  },
   error => {
+    console.error('API Response error:', error.config?.url, error.response?.status, error.response?.data);
     if (
       error.response &&
       [401, 403].includes(error.response.status)
     ) {
+      console.log('Unauthorized response - clearing tokens and redirecting');
       // Remove tokens and user data from storage, then reload page (or redirect to login)
       localStorage.removeItem('accessToken');
       localStorage.removeItem('refreshToken');
