@@ -22,9 +22,9 @@ export default function OrderHistory() {
 
   // Get user ID from auth context or localStorage as fallback
   const getUserId = () => {
-    if (user?.id) {
-      console.log('User ID from auth context:', user.id);
-      return user.id;
+    if (user?.nameid) {
+      console.log('User ID from auth context:', user.nameid);
+      return user.nameid;
     }
     
     // Fallback to localStorage
