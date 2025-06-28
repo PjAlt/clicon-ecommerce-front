@@ -192,10 +192,24 @@ class ApiClient {
     return this.request('post', '/Order/place-order', { userId, shippingAddress, shippingCity });
   }
 
-  async createPaymentIntent(userId: number, orderId: number, paymentMethodId: number, description: string) {
-    return this.request('post', '/Payment/create-payment-intent', { userId, orderId, paymentMethodId, description });
+  async createPaymentIntent(
+    userId: number, 
+    orderId: number, 
+    paymentMethodId: number, 
+    description: string,
+    successUrl?: string,
+    failureUrl?: string
+  ) {
+    const payload: any = { userId, orderId, paymentMethodId, description };
+    
+    // Add redirect URLs if provided
+    if (successUrl) payload.successUrl = successUrl;
+    if (failureUrl) payload.failureUrl = failureUrl;
+    
+    return this.request('post', '/Payment/create-payment-intent', payload);
   }
 
+  // Verify payment
   async verifyPayment(paymentRequestId: number, esewaTransactionId?: string, khaltiPidx?: string, status?: string) {
     const formData = new FormData();
     formData.append('PaymentRequestId', paymentRequestId.toString());

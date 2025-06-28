@@ -13,6 +13,7 @@ import { useBackendCart } from '@/hooks/useBackendCart';
 import { apiClient } from '@/lib/api';
 import { PaymentMethod } from '@/types/cart';
 import { toast } from '@/hooks/use-toast';
+import { getPaymentRedirectUrls } from '@/utils/paymentUtils';
 
 export default function Checkout() {
   const navigate = useNavigate();
@@ -45,8 +46,19 @@ export default function Checkout() {
   });
 
   const createPaymentIntentMutation = useMutation({
-    mutationFn: ({ orderId, paymentMethodId }: { orderId: number; paymentMethodId: number }) =>
-      apiClient.createPaymentIntent(userId!, orderId, paymentMethodId, 'Order Payment'),
+    mutationFn: ({ orderId, paymentMethodId }: { orderId: number; paymentMethodId: number }) => {
+      // Get correct redirect URLs
+      const redirectUrls = getPaymentRedirectUrls();
+      
+      return apiClient.createPaymentIntent(
+        userId!, 
+        orderId, 
+        paymentMethodId, 
+        'Order Payment',
+        redirectUrls.successUrl,
+        redirectUrls.failureUrl
+      );
+    },
   });
 
   const handlePlaceOrder = async () => {
@@ -88,7 +100,7 @@ export default function Checkout() {
         throw new Error('Failed to create order');
       }
 
-      // Step 2: Create Payment Intent
+      // Step 2: Create Payment Intent with correct redirect URLs
       const paymentIntentResponse = await createPaymentIntentMutation.mutateAsync({
         orderId,
         paymentMethodId: parseInt(selectedPaymentMethod),
