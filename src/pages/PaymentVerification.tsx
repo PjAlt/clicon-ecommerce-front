@@ -18,7 +18,6 @@ export default function PaymentVerification() {
 
   // Get userId from localStorage or auth context if available
   useEffect(() => {
-    // Replace with your actual user auth logic if needed
     const storedUser = localStorage.getItem('user');
     if (storedUser) {
       try {
@@ -33,19 +32,27 @@ export default function PaymentVerification() {
   // Payment verification logic
   useEffect(() => {
     const params = new URLSearchParams(location.search);
-    if (params.get('pidx')) {
-      setGateway('khalti');
-      verifyKhalti(params);
-    } else if (params.get('data')) {
+    const pathname = location.pathname;
+
+    // Determine gateway based on URL path and params
+    if (pathname.includes('/callback/esewa/success') || params.get('data')) {
       setGateway('esewa');
       verifyEsewa(params);
+    } else if (pathname.includes('/callback/khalti/success') || params.get('pidx')) {
+      setGateway('khalti');
+      verifyKhalti(params);
+    } else if (pathname.includes('/callback/esewa/failure')) {
+      setGateway('esewa');
+      handleEsewaFailure(params);
+    } else if (pathname.includes('/callback/khalti/failure')) {
+      setGateway('khalti');
+      handleKhaltiFailure(params);
     } else {
-      // Fallback: check for COD or direct access
+      // Direct access to /payment/success or /payment/verification
       setGateway('cod');
       setStatus('success');
     }
-    // eslint-disable-next-line
-  }, [location.search]);
+  }, [location.pathname, location.search]);
 
   // Fetch latest payment after verification
   useEffect(() => {
@@ -56,6 +63,49 @@ export default function PaymentVerification() {
         .catch(() => setPayment(null));
     }
   }, [status, userId]);
+
+  const verifyEsewa = async (params: URLSearchParams) => {
+    try {
+      setStatus('pending');
+      const data = params.get('data');
+      
+      if (!data) {
+        throw new Error('Missing eSewa params');
+      }
+      
+      await apiClient.request('GET', `/payment/callback/esewa/success?data=${data}`);
+      
+      setStatus('success');
+      
+      // Clear pending payment from localStorage
+      localStorage.removeItem('pendingPayment');
+      
+      toast({
+        title: 'Payment Successful',
+        description: 'Your eSewa payment was successful!',
+      });
+
+      // Navigate to success page after verification
+      setTimeout(() => {
+        navigate('/payment/success/esewa');
+      }, 2000);
+      
+    } catch (error) {
+      console.error('eSewa payment verification failed:', error);
+      setStatus('failed');
+      
+      toast({
+        title: 'Verification Error',
+        description: 'Failed to verify eSewa payment.',
+        variant: 'destructive',
+      });
+
+      // Navigate to failure page
+      setTimeout(() => {
+        navigate('/payment/callback/esewa/failure' + location.search);
+      }, 2000);
+    }
+  };
 
   const verifyKhalti = async (params: URLSearchParams) => {
     try {
@@ -69,65 +119,74 @@ export default function PaymentVerification() {
         throw new Error('Missing Khalti params');
       }
       
-      // Use environment API base URL instead of hardcoded localhost
       await apiClient.request(
         'GET',
         `/payment/callback/khalti/success?pidx=${pidx}&amount=${amount}&purchase_order_id=${purchase_order_id}&transaction_id=${transaction_id}`
       );
       
       setStatus('success');
+      
+      // Clear pending payment from localStorage
+      localStorage.removeItem('pendingPayment');
+      
       toast({
         title: 'Payment Successful',
         description: 'Your Khalti payment was successful!',
       });
+
+      // Navigate to success page after verification
+      setTimeout(() => {
+        navigate('/payment/success/khalti');
+      }, 2000);
+      
     } catch (error) {
       console.error('Khalti payment verification failed:', error);
       setStatus('failed');
-      
-      // Navigate to Khalti failure page
-      navigate('/payment/khalti-failure' + location.search);
       
       toast({
         title: 'Verification Error',
         description: 'Failed to verify Khalti payment.',
         variant: 'destructive',
       });
+
+      // Navigate to failure page
+      setTimeout(() => {
+        navigate('/payment/khalti-failure' + location.search);
+      }, 2000);
     }
   };
 
-  const verifyEsewa = async (params: URLSearchParams) => {
+  const handleEsewaFailure = async (params: URLSearchParams) => {
     try {
-      setStatus('pending');
+      // Call the failure callback endpoint for eSewa if needed
       const data = params.get('data');
-      
-      if (!data) {
-        throw new Error('Missing eSewa params');
+      if (data) {
+        await apiClient.request('GET', `/payment/callback/esewa/failure?data=${data}`);
       }
-      
-      // Use environment API base URL instead of hardcoded localhost
-      await apiClient.request('GET', `/payment/callback/esewa/success?data=${data}`);
-      
-      setStatus('success');
-      toast({
-        title: 'Payment Successful',
-        description: 'Your eSewa payment was successful!',
-      });
     } catch (error) {
-      console.error('eSewa payment verification failed:', error);
-      setStatus('failed');
-      
-      // Navigate to eSewa failure page
-      navigate('/payment/esewa-failure' + location.search);
-      
-      toast({
-        title: 'Verification Error',
-        description: 'Failed to verify eSewa payment.',
-        variant: 'destructive',
-      });
+      console.error('Error handling eSewa payment failure callback:', error);
     }
+    
+    // Navigate to failure page
+    navigate('/payment/esewa-failure' + location.search);
   };
 
-  // UI rendering
+  const handleKhaltiFailure = async (params: URLSearchParams) => {
+    try {
+      // Call the failure callback endpoint for Khalti if needed
+      const pidx = params.get('pidx');
+      if (pidx) {
+        await apiClient.request('GET', `/payment/callback/khalti/failure?pidx=${pidx}`);
+      }
+    } catch (error) {
+      console.error('Error handling Khalti payment failure callback:', error);
+    }
+    
+    // Navigate to failure page
+    navigate('/payment/khalti-failure' + location.search);
+  };
+
+  // UI rendering for verification process
   return (
     <div className="min-h-screen bg-gray-50">
       <Header />
@@ -140,28 +199,23 @@ export default function PaymentVerification() {
                 {status === 'success' && <CheckCircle className="h-16 w-16 text-green-500" />}
                 {status === 'failed' && <AlertCircle className="h-16 w-16 text-red-500" />}
               </div>
-              {status === 'pending' && (
-                <CardTitle className="text-2xl">Verifying Payment...</CardTitle>
-              )}
-              {status === 'success' && payment?.paymentMethodName !== 'COD' && (
-                <CardTitle className="text-2xl">Payment Successful!</CardTitle>
-              )}
-              {status === 'success' && payment?.paymentMethodName === 'COD' && (
-                <CardTitle className="text-2xl text-green-600">Order Request Confirmed!</CardTitle>
-              )}
-              {status === 'failed' && (
-                <CardTitle className="text-2xl">Payment Verification Failed</CardTitle>
-              )}
+              
+              <CardTitle className="text-2xl">
+                {status === 'pending' && 'Verifying Payment...'}
+                {status === 'success' && 'Payment Verified!'}
+                {status === 'failed' && 'Payment Verification Failed'}
+              </CardTitle>
             </CardHeader>
+            
             <CardContent className="text-center space-y-4">
               {status === 'pending' && (
                 <p className="text-gray-600">
                   Please wait while we verify your payment
-                  {gateway && gateway !== 'cod' ? ` with ${gateway}` : ''}. This may take a few moments.
+                  {gateway && gateway !== 'cod' ? ` with ${gateway.toUpperCase()}` : ''}. 
+                  This may take a few moments.
                 </p>
               )}
 
-              {/* COD UI */}
               {status === 'success' && payment?.paymentMethodName === 'COD' && (
                 <>
                   <p className="text-gray-700 mb-2">
@@ -189,20 +243,13 @@ export default function PaymentVerification() {
                 </>
               )}
 
-              {/* Khalti/eSewa UI */}
               {status === 'success' && payment?.paymentMethodName !== 'COD' && (
                 <>
                   <p className="text-gray-600">
-                    Your payment has been processed successfully
-                    {gateway ? ` through ${gateway}` : ''}. Your order is being prepared.
+                    Payment verification successful! Redirecting you to the success page...
                   </p>
-                  <div className="space-y-2">
-                    <Button onClick={() => navigate('/track-order')} className="w-full">
-                      Track Your Order
-                    </Button>
-                    <Button onClick={() => navigate('/')} variant="outline" className="w-full">
-                      Continue Shopping
-                    </Button>
+                  <div className="text-sm text-gray-500">
+                    Gateway: {gateway?.toUpperCase()}
                   </div>
                 </>
               )}
@@ -210,16 +257,10 @@ export default function PaymentVerification() {
               {status === 'failed' && (
                 <>
                   <p className="text-gray-600">
-                    We couldn't verify your payment. If you completed the payment
-                    {gateway ? ` on ${gateway}` : ''}, please contact support with your transaction details.
+                    We couldn't verify your payment. Redirecting you to try again...
                   </p>
-                  <div className="space-y-2">
-                    <Button onClick={() => navigate('/checkout')} className="w-full">
-                      Try Again
-                    </Button>
-                    <Button onClick={() => navigate('/')} variant="outline" className="w-full">
-                      Back to Home
-                    </Button>
+                  <div className="text-sm text-gray-500">
+                    Gateway: {gateway?.toUpperCase()}
                   </div>
                 </>
               )}

@@ -5,7 +5,7 @@ import { Header } from '@/components/Header';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
-export default function EsewaPaymentSuccess() {
+export default function KhaltiPaymentSuccess() {
   const navigate = useNavigate();
 
   return (
@@ -21,13 +21,13 @@ export default function EsewaPaymentSuccess() {
               </div>
               
               <CardTitle className="text-2xl text-green-600">
-                eSewa Payment Successful!
+                Khalti Payment Successful!
               </CardTitle>
             </CardHeader>
             
             <CardContent className="text-center space-y-4">
               <p className="text-gray-600">
-                Your payment has been processed successfully through eSewa. 
+                Your payment has been processed successfully through Khalti. 
                 Your order is being prepared and you will receive updates shortly.
               </p>
               

@@ -15,6 +15,7 @@ import Checkout from "./pages/Checkout";
 import PaymentVerification from "./pages/PaymentVerification";
 import EsewaPaymentSuccess from "./pages/EsewaPaymentSuccess";
 import EsewaPaymentFailure from "./pages/EsewaPaymentFailure";
+import KhaltiPaymentSuccess from "./pages/KhaltiPaymentSuccess";
 import KhaltiPaymentFailure from "./pages/KhaltiPaymentFailure";
 import TrackOrder from "./pages/TrackOrder";
 import TrackOrderDetails from "./pages/TrackOrderDetails";
@@ -41,12 +42,21 @@ const App = () => (
               <Route path="/category/:categoryId" element={<Shop />} />
               <Route path="/cart" element={<Cart />} />
               <Route path="/checkout" element={<Checkout />} />
+              
+              {/* Payment verification routes - handled by PaymentVerification.tsx */}
               <Route path="/payment/success" element={<PaymentVerification />} />
               <Route path="/payment/verification" element={<PaymentVerification />} />
-              <Route path="/payment/callback/esewa/success" element={<EsewaPaymentSuccess />} />
-              <Route path="/payment/callback/esewa/failure" element={<EsewaPaymentFailure />} />
+              <Route path="/payment/callback/esewa/success" element={<PaymentVerification />} />
+              <Route path="/payment/callback/esewa/failure" element={<PaymentVerification />} />
+              <Route path="/payment/callback/khalti/success" element={<PaymentVerification />} />
+              <Route path="/payment/callback/khalti/failure" element={<PaymentVerification />} />
+              
+              {/* Final success/failure pages - purely presentational */}
+              <Route path="/payment/success/esewa" element={<EsewaPaymentSuccess />} />
+              <Route path="/payment/success/khalti" element={<KhaltiPaymentSuccess />} />
               <Route path="/payment/esewa-failure" element={<EsewaPaymentFailure />} />
               <Route path="/payment/khalti-failure" element={<KhaltiPaymentFailure />} />
+              
               <Route path="/track-order" element={<TrackOrder />} />
               <Route path="/track-order-details/:orderId" element={<TrackOrderDetails />} />
               <Route path="/orders" element={<OrderHistory />} />
